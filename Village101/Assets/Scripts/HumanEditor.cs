@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 
 
-[CustomEditor(typeof(Human))]
+//[CustomEditor(typeof(Human))]
 
 
 public class HumanEditor : Editor

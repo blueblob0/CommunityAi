@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
-
+using UnityEngine.UI;
 
 
 /// <summary>
@@ -20,12 +20,24 @@ public class TheLand : MonoBehaviour {
     private bool first = false;
     public bool timeRun = true;
 
+    public Text timeRecord;
+
     
     // Use this for initialization
     void Start () {
         startTime = Time.time;
         dayCount = 0;
+        setTimeUI();
         first = true;
+    }
+
+    void setTimeUI()
+    {
+       float holdTime = ((float)dayCount / 365.0f);
+        int holdYears = Mathf.FloorToInt(holdTime);
+        float holdDays = Mathf.Floor((holdTime - holdYears) * 365);
+        timeRecord.text = "Year:" + Mathf.Floor(holdTime) +  ", Day:" + holdDays;
+
     }
 	
 	// Update is called once per frame
@@ -42,6 +54,7 @@ public class TheLand : MonoBehaviour {
         {            
             StartEndDay();
             dayCount++;
+            setTimeUI();
             StartNewDay();
         }
          
@@ -53,6 +66,7 @@ public class TheLand : MonoBehaviour {
             StartEndDay();
             startTime = Time.time;
             dayCount++;
+            setTimeUI();
             StartNewDay();
         }
        //  */

@@ -210,7 +210,7 @@ public class Community : MonoBehaviour {
         if(year <= 16)
         {
             
-            year = Random.Range(10, 17);
+            year = Random.Range(12, 17);
 
         }else if (year >30)
         {
@@ -218,17 +218,19 @@ public class Community : MonoBehaviour {
 
         }
 
-        a.GetComponent<Human>().StartHuman(Random.Range(0, 365), year);   
+        a.GetComponent<Human>().StartHuman(Random.Range(0, 365), year,null);   
 
         humans.Add(a.GetComponent<Human>());
     }
 
-   
+
 
     /// <summary>
-    /// creating a villager for now just makes them but later may do more
+    ///  creating a villager for now just makes them but later may do more
     /// </summary>
-    public Human CreateBabyVillager()
+    /// <param name="mum">The baby's mum</param>
+    /// <returns></returns>
+    public Human CreateBabyVillager(Human mum)
     {
         if (AllSheltersFull())
         {
@@ -238,7 +240,7 @@ public class Community : MonoBehaviour {
         //create villager game objects and add them to the list
         GameObject a = Instantiate(Resources.Load(humanPrefabName)) as GameObject;
         Human ha = a.GetComponent<Human>();
-        ha.StartHuman(0,0);
+        ha.StartHuman(0,0,mum);
         humans.Add(ha);
         HousePerson(ha);
         return ha;
@@ -675,8 +677,7 @@ public class Community : MonoBehaviour {
         return true;
 
     }
-
-
+    
     public void StartShelterDay()
     {
 
@@ -702,6 +703,21 @@ public class Community : MonoBehaviour {
             }
         }
 
+
+    }
+
+
+    public Human GetFreeOtherSex(string sex)
+    {
+        Human thePartner = null;
+        foreach (Human h in humans)
+        {
+            if(h.sex != sex && h.CheckForPartner() == false)
+            {
+                return h;
+            }
+        }
+        return thePartner;
 
     }
 
