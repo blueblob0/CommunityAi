@@ -1,10 +1,15 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 using UnityEngine.UI;
-
+using System.Runtime.Serialization.Formatters.Binary;
+using System.IO;
 
 public class Community : MonoBehaviour {
-       
+
+
+    public const string fileName = "/humandata.data";
+
+
     // The Names of the prefabs to be loaded for each type of item
     private const string humanPrefabName = "Human SomeAi";
     private const string shelterPrefabName = "Normal House"; // just one house for now if time later add more houses
@@ -15,8 +20,8 @@ public class Community : MonoBehaviour {
 
     public Node fuelNode;
     public Node foodNode;
-    
-    
+
+   
 
     //Set to private later
     private List<Human> humans = new List<Human>();
@@ -34,8 +39,7 @@ public class Community : MonoBehaviour {
     void Start()
     {
         Application.runInBackground = true; //not part of game logic  if multiple of this change to only be called once 
-
-
+     
 
         //Start by creating villagers 
 
@@ -73,13 +77,59 @@ public class Community : MonoBehaviour {
     void OnEnable()
     {        
         TheLand.EndDay += EndOfDay;
+        TheLand.SaveHumans+= SaveCurrentHumans;
     }
 
 
     void OnDisable()
     {       
         TheLand.EndDay -= EndOfDay;
+        TheLand.SaveHumans -= SaveCurrentHumans;
     }
+
+
+    /// <summary>
+    /// saving the humans for later use
+    /// </summary>
+    void SaveCurrentHumans()
+    {
+        //first cread current lists if any
+        BinaryFormatter bf = new BinaryFormatter();
+        List<List<HumanHolder>> manyHumans = new List<List<HumanHolder>>();
+        // first load the old humans if ther are any
+        if (File.Exists(Application.persistentDataPath + fileName))
+        {
+            /*            Debug.Log(Application.persistentDataPath + fileName);*/
+            
+           
+            FileStream fileOpen = File.Open(Application.persistentDataPath + fileName, FileMode.Open);
+            manyHumans = (List<List<HumanHolder>>)bf.Deserialize(fileOpen);            
+            fileOpen.Close();           
+        }
+
+        // convert thye list so it can be seralised
+        List<HumanHolder> holder = new List<HumanHolder>();
+
+
+        foreach(Human h in humans)
+        {
+            HumanHolder aholder = new HumanHolder(h.food, h.water, h.tempera, h.pregnant, h.age, h.shelterNum, h.sex, h.mum.firstName, h.dad.firstName, h.children.Count, h.GetWholeName());
+            holder.Add(aholder);
+        }
+
+
+        manyHumans.Add(holder);
+        FileStream file = File.Create(Application.persistentDataPath + fileName);
+        bf.Serialize(file, manyHumans);
+        file.Close();
+
+        Application.LoadLevel("test2");
+    }
+
+
+  
+
+    
    
     #region Generate starting resourses 
 
@@ -210,7 +260,7 @@ public class Community : MonoBehaviour {
         if(year <= 16)
         {
             
-            year = Random.Range(10, 17);
+            year = Random.Range(12, 17);
 
         }else if (year >30)
         {
@@ -218,17 +268,19 @@ public class Community : MonoBehaviour {
 
         }
 
-        a.GetComponent<Human>().StartHuman(Random.Range(0, 365), year);   
+        a.GetComponent<Human>().StartHuman(Random.Range(0, 365), year,null);   
 
         humans.Add(a.GetComponent<Human>());
     }
 
-   
+
 
     /// <summary>
-    /// creating a villager for now just makes them but later may do more
+    ///  creating a villager for now just makes them but later may do more
     /// </summary>
-    public Human CreateBabyVillager()
+    /// <param name="mum">The baby's mum</param>
+    /// <returns></returns>
+    public Human CreateBabyVillager(Human mum)
     {
         if (AllSheltersFull())
         {
@@ -238,7 +290,7 @@ public class Community : MonoBehaviour {
         //create villager game objects and add them to the list
         GameObject a = Instantiate(Resources.Load(humanPrefabName)) as GameObject;
         Human ha = a.GetComponent<Human>();
-        ha.StartHuman(0,0);
+        ha.StartHuman(0,0,mum);
         humans.Add(ha);
         HousePerson(ha);
         return ha;
@@ -675,8 +727,7 @@ public class Community : MonoBehaviour {
         return true;
 
     }
-
-
+    
     public void StartShelterDay()
     {
 
@@ -706,8 +757,36 @@ public class Community : MonoBehaviour {
     }
 
 
+    public Human GetFreeOtherSex(string sex)
+    {
+        Human thePartner = null;
+        foreach (Human h in humans)
+        {
+            if(h.sex != sex && h.CheckForPartner() == false)
+            {
+                return h;
+            }
+        }
+        return thePartner;
 
-    
+    }
+
+    public bool SurnameUsed(string theName)
+    {
+        bool used = false;
+        foreach (Human h in humans)
+        {
+            if (h.surname == theName)
+            {
+                used = true;
+                return used;
+            }
+        }
+        return used;
+
+    }
+
+
     #endregion
 
 
@@ -768,7 +847,7 @@ public class Community : MonoBehaviour {
     /// </summary>
     void EndOfDay()
     {
-
+        
         //RemoveNullShelter();
         for ( int i =0;i< shelters.Count;i++)
         {
@@ -782,11 +861,23 @@ public class Community : MonoBehaviour {
         fuelNode.ClearPeople();
 
 
+        bool checkh = true;
         foreach (Human h in humans)
         {
             AddToShelter(h.shelterNum, h);
             //Debug.Log(h.name +" " +h.transform.position);
+            if (!h.parents)
+            {
+                checkh = false;
+            }
+        }      
+        
+        if (checkh)
+        {
+           // SaveCurrentHumans();
         }
+
+
     }
 
     public int NumHumans()
@@ -848,7 +939,7 @@ public enum ageType
     infant,
     teen,
     adult,
-    oldAge
+    senior
 
 
 }

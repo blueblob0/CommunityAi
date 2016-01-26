@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-
+[System.Serializable]
 //later on this will be more complex taking temp from the season's temp if the human is working clothes and the shelter 
 //for now just used to record days without fire in shelter and if would die
 public class Temperature

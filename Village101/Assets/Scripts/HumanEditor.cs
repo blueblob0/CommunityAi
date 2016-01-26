@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 
 
-[CustomEditor(typeof(Human))]
+//[CustomEditor(typeof(Human))]
 
 
 public class HumanEditor : Editor
@@ -14,6 +14,8 @@ public class HumanEditor : Editor
     {
         Human theHuman = (Human)target;
         EditorGUILayout.LabelField("Age", theHuman.age.CheckAge());
+
+
     }
    
 

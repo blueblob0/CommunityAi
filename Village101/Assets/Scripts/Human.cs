@@ -1,13 +1,13 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
+using UnityEngine.UI;
+
 
 public class Human : MonoBehaviour
 {
     #region Outside Varables    
 
-    private const int maxHealth = 100;
-    private const int maxMediumHealth = 80;
-    private const int maxLowHealth = 40;
+    public Text nameUI;
 
     Community communityObj;
 
@@ -26,15 +26,13 @@ public class Human : MonoBehaviour
     
     public bool dead = false;
 
-    private Hunger food;
-    private Thirst water;
-    private Temperature tempera;
-    private Pregnancy pregnant;
-    public Human Child;
+    public Hunger food;
+    public Thirst water;
+    public Temperature tempera;
+    public Pregnancy pregnant;
     public Age age;
-    public GameObject dad;
-    public GameObject mum;
-    public List<GameObject> children = new List<GameObject>();
+
+  
     public Task currentTask = null;
 
     public int shelterNum = -1;
@@ -47,9 +45,19 @@ public class Human : MonoBehaviour
 
     #region Personality
     public string firstName;
+    public string surname;
     public string sex;
-    public string gender;
 
+    #endregion
+
+
+    #region Relations
+    private Human currentChild;
+    public Human dad;
+    public Human mum;
+    private Human partner;
+    public bool parents;
+    public List<Human> children = new List<Human>();
     #endregion
 
     #region Programming Info
@@ -66,7 +74,7 @@ public class Human : MonoBehaviour
     #region Create Human
 
     // Creates the human with a age (has to be called to make starting age easier
-    public void StartHuman(int day, int year)
+    public void StartHuman(int day, int year,Human theMum)
     {
         dead = false;
       
@@ -78,55 +86,114 @@ public class Human : MonoBehaviour
         age = new Age(day,year);
         tempera = new Temperature();
         GenerateSex();
+        partner = null; // mark no partner at start;
+        // if the child has a mum
+        if (theMum)
+        {
+            surname = theMum.surname;
+            mum = theMum;
+            dad = theMum.partner;
+            parents = true;
+        }
+        else // otherwise create a new surname for them
+        {
+            mum = null;
+            dad = null;
+            
+            SetSurname();
+            parents = false;
+        }
+        pregnant = new Pregnancy();
         CanBePregnant();
+        AssignPartner();
+
+
         // set the name of the game object to be the person name
-        gameObject.name = firstName;
+        SetName();
+
         myMat = GetComponentInChildren<Renderer>().material;
     }
 
-    private void CanBePregnant()
+
+    void SetSurname()
     {
-        //Debug.Log(Child);
-        if (Child !=null)
-        {
+        bool test = true;
 
-            if (Child.age.GetAgeType() != ageType.infant)
-            {
-                Child = null;
-                Debug.Log("1");
-            }
-            else
-            {
-
-                pregnant.canBePregnant = false;
-            }
-        }else if (sex == femaleS&& age.GetAgeType() >=ageType.adult) // if the person is female and is old enough then they can Be Pregnant
+        while (test)
         {
-           // Debug.Log("1");
-           // Debug.Log(Child);
-            //Debug.Log(Child!=null);
-            pregnant.canBePregnant = true;
+            int numNames = System.Enum.GetNames(typeof(Surnames)).Length;
+            int rand = Random.Range(0, numNames);
+            surname = System.Enum.GetName(typeof(Surnames), rand);
+            test = communityObj.SurnameUsed(surname);
+
         }
+
+
+
+    }
+
+    public string GetWholeName()
+    {
+        return firstName + " " + surname;
+    }
+
+    private void SetName()
+    {
+        gameObject.name = GetWholeName();
+        nameUI.text = firstName[0].ToString() + " \n" + surname[0].ToString();
     }
 
 
+      
     
-    
+    private void CanBePregnant()
+    {
+        if( partner == null)
+        {
+            pregnant.canBePregnant = false;
+            return;
+        }
 
+        if (currentChild !=null)
+        {
+            if (currentChild.age.GetAgeType() != ageType.infant)
+            {
+                currentChild = null;                
+            }
+            else
+            {
+                pregnant.canBePregnant = false;
+            }
+        }
+        else if (sex == femaleS&& age.GetAgeType() >=ageType.adult) // if the person is female and is old enough then they can Be Pregnant
+        {
+
+
+            pregnant.SetChance(age.GetAgeType());
+           
+           
+            pregnant.canBePregnant = true;
+        }
+    }
+    
+    /// <summary>
+    /// for adding alert when enabled
+    /// </summary>
     void OnEnable()
     {
         //TheLand.NewDay += StartHumanDay;
         TheLand.EndDay += EndHumanDay;
     }
-
-
+    
+    /// <summary>
+    /// for removing alters when disabled
+    /// </summary>
     void OnDisable()
     {
        // TheLand.NewDay -= StartHumanDay;
         TheLand.EndDay -= EndHumanDay;
     }
-
-
+    
     private void GenerateSex()
     {
         int randCheck =500;
@@ -142,7 +209,7 @@ public class Human : MonoBehaviour
         }
         // generate the person to be male or female
         float holdRand = Random.Range(0, 1000);
-        pregnant = new Pregnancy();
+        
         if (holdRand < randCheck)
         {
             sex = femaleS;
@@ -179,9 +246,7 @@ public class Human : MonoBehaviour
        
 
     }
-    
    
-
 
     #endregion
 
@@ -250,7 +315,15 @@ public class Human : MonoBehaviour
        
     }
 
+    public bool CheckForPartner()
+    {
+        if (partner)
+        {
+            return true;
 
+        }
+        return false;
+    }
 
 
     public void UseFire()
@@ -271,7 +344,47 @@ public class Human : MonoBehaviour
         
     }
 
+    /// <summary>
+    /// assign a partner to the human and mark surname accordingly 
+    /// </summary>
+    private void AssignPartner()
+    {
 
+        if (age.GetAgeType() < ageType.adult)
+        {
+            return;
+        }
+
+        Human hold  = communityObj.GetFreeOtherSex(sex);
+
+        if (hold == null)
+        {
+            //no partner ready
+            return;
+        }
+        else
+        {
+            partner = hold;
+        }   
+        // female gets male partner surname for now 
+        if (sex == femaleS)
+        {
+            surname = partner.surname;
+
+        }
+        else
+        {
+            partner.surname = surname;
+        }
+        partner.AssignPartner(this);
+        SetName();
+    }
+
+    public void AssignPartner(Human newPartner)
+    {
+        partner = this;
+        SetName();
+    }
 
     /// <summary>
     /// used for outside fucntions t ocheckif a vilalger has  job
@@ -296,7 +409,7 @@ public class Human : MonoBehaviour
     {
         if (currentTask != null)
         {
-            Debug.LogError(firstName + " " + name); 
+            Debug.LogError(GetWholeName()); 
             Debug.Log("villager has a job already"); // there is no reason for this to happen but if it does might need to return true or false if the job can be assigned
             return;
         }
@@ -350,6 +463,9 @@ public class Human : MonoBehaviour
         //increase the age of the person by one day
         age.NewDay();
         myMat.color = age.CheckAgeColour();
+        AssignPartner();
+
+
 
         //let the hunger handler know that it has been a new day
         food.NewDay();
@@ -366,9 +482,11 @@ public class Human : MonoBehaviour
         //let The pregnancy's holder know its a new day and check for new birth
         if (pregnant.NewDay())
         {
-            Child = communityObj.CreateBabyVillager();
+            currentChild = communityObj.CreateBabyVillager(this);
+            children.Add(currentChild);
+            partner.children.Add(currentChild);
             pregnant.GiveBirth();
-            Debug.Log(age.GetAgeType() + "Giving Birth ");
+           // Debug.Log(age.GetAgeType() + "Giving Birth ");
         }
         
 
@@ -386,8 +504,7 @@ public class Human : MonoBehaviour
     {
         // first check to see if the human will die from lack of food
         if (dead || food.CheckHungerDeath() || water.CheckThirstDeath()|| age.CheckAgeDeath()||tempera.CheckColdDeath())
-        {
-            
+        {            
             dead = true;
             return;
         }

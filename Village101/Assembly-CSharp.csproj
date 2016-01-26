@@ -47,12 +47,17 @@
   </ItemGroup>
   <ItemGroup>
      <Compile Include="Assets\Scripts\Community.cs" />
+     <Compile Include="Assets\Scripts\DisplayData.cs" />
      <Compile Include="Assets\Scripts\Enums\Names\NamesBoth.cs" />
      <Compile Include="Assets\Scripts\Enums\Names\NamesFemale.cs" />
      <Compile Include="Assets\Scripts\Enums\Names\NamesMale.cs" />
+     <Compile Include="Assets\Scripts\Enums\Names\Surnames.cs" />
      <Compile Include="Assets\Scripts\Enums\WaterSources.cs" />
+     <Compile Include="Assets\Scripts\GameHold.cs" />
      <Compile Include="Assets\Scripts\Human.cs" />
      <Compile Include="Assets\Scripts\HumanEditor.cs" />
+     <Compile Include="Assets\Scripts\HumanHolder.cs" />
+     <Compile Include="Assets\Scripts\HumanTestData.cs" />
      <Compile Include="Assets\Scripts\Node.cs" />
      <Compile Include="Assets\Scripts\Shelter.cs" />
      <Compile Include="Assets\Scripts\States\Age.cs" />

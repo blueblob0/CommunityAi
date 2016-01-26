@@ -14,7 +14,7 @@ using System.Collections;
 
 // only adults can be pregnant ( old people might have a small chance at this later)
 
-
+[System.Serializable]
 public class Age
 {
     public const int oldAge = 40;
@@ -47,7 +47,7 @@ public class Age
     {
         if (ageYear > oldAge)
         {
-            theAgeType = ageType.oldAge;
+            theAgeType = ageType.senior;
            // GetComponentInChildren<Renderer>().material.color = Color.grey;
         }
         else if (ageYear > 16)
@@ -73,7 +73,7 @@ public class Age
 
         if (ageYear > oldAge)
         {
-            theAgeType = ageType.oldAge;
+            theAgeType = ageType.senior;
              return  Color.grey;
         }
         else if (ageYear > 16)
