@@ -6,9 +6,13 @@ using System.IO;
 
 public class Community : MonoBehaviour {
 
-
+    public List<List<HumanHolder>> allHumans = new List<List<HumanHolder>>();
     public const string fileName = "/humandata.data";
 
+    public delegate void NewDayAction();
+    public static event NewDayAction AllDead;
+
+   
 
     // The Names of the prefabs to be loaded for each type of item
     private const string humanPrefabName = "Human SomeAi";
@@ -21,10 +25,10 @@ public class Community : MonoBehaviour {
     public Node fuelNode;
     public Node foodNode;
 
-   
+
 
     //Set to private later
-    private List<Human> humans = new List<Human>();
+    public List<Human> humans = new List<Human>();
     public List<Shelter> shelters = new List<Shelter>();
     public int food = 0; // each villager needs 3 food per a day, if food is not cooked it only counts as 1/2 a food, 3 chickens give 1 food per day, other animals indifferent amounts but also use food 
     public int fuel = 0; //Each shelter needs 1 wood per day to keep fire going, one tree gives 2-3 wood
@@ -35,16 +39,17 @@ public class Community : MonoBehaviour {
     public float maxScreenWidth; // represents the max width of the camera for placing houses
 
 
-    // Use this for initialization
+    // this start is the random one now reading from file
+    /*
     void Start()
     {
         Application.runInBackground = true; //not part of game logic  if multiple of this change to only be called once 
-     
+
 
         //Start by creating villagers 
 
         //villagers not random now but might be later 
-        int numVillagers =  10;
+        int numVillagers = 10;
 
 
         for (int i = 0; i < numVillagers; i++)
@@ -69,11 +74,95 @@ public class Community : MonoBehaviour {
 
         //Then Livestock although currently does nothing)
         GenerateLivestock();
-       // food = 1000000000; 
-    // fuel = 1000000000;
+        // food = 1000000000; 
+        // fuel = 1000000000;
 
-}
+    }
+    */
 
+
+    void Start()
+    {
+        if (File.Exists(Application.persistentDataPath + Community.fileName))
+        {
+            BinaryFormatter bf = new BinaryFormatter();
+            FileStream fileOpen = File.Open(Application.persistentDataPath + fileName, FileMode.Open);
+            allHumans = (List<List<HumanHolder>>)bf.Deserialize(fileOpen);
+            fileOpen.Close();
+        }
+    }
+
+   public void StartComunity(int iteration)
+    {
+        if (File.Exists(Application.persistentDataPath + Community.fileName))
+        {
+            BinaryFormatter bf = new BinaryFormatter();
+            FileStream fileOpen = File.Open(Application.persistentDataPath + fileName, FileMode.Open);
+            allHumans = (List<List<HumanHolder>>)bf.Deserialize(fileOpen);
+            fileOpen.Close();
+        }
+        // start by removing old people 
+        foreach (Human h in humans)
+        {
+            h.dead = true;
+        }
+        humans.Clear();
+        foodNode.peopleList.Clear();
+        fuelNode.peopleList.Clear();
+        //then older shelters 
+        Shelter[] shelt = new Shelter[shelters.Count];
+
+        // for running through the new day things on the shelters 
+        for (int i = 0; i < shelters.Count; i++)
+        {
+            shelt[i] = shelters[i];
+        }
+
+        for (int i = 0; i < shelt.Length; i++)
+        {
+            if (shelt[i] != null)
+            {               
+                shelt[i].RemoveThisShelter();
+            }
+        }
+
+        shelters.Clear();
+
+        //Start by creating villagers 
+        List<HumanHolder> currentHumans = allHumans[iteration];
+
+        for (int i = 0; i < currentHumans.Count; i++)
+        {
+            CreateNewVillager(currentHumans[i]);
+            
+        }
+        
+
+
+        //Then the starting Resourses (the idea is its a exsisting village not a new one with nothing)
+
+        //Start with Shelter
+        GenerateShelter(currentHumans); // make shelter     
+
+
+        PlacePeopleHouses();
+        //Then Water
+        GenerateWater();
+
+        //Then Food
+        GenerateFood();
+
+        //Then wood
+        GenerateWood();
+
+        //Then Livestock although currently does nothing)
+        GenerateLivestock();
+        // food = 1000000000; 
+        // fuel = 1000000000;    
+      
+
+    }
+    
     void OnEnable()
     {        
         TheLand.EndDay += EndOfDay;
@@ -113,7 +202,35 @@ public class Community : MonoBehaviour {
 
         foreach(Human h in humans)
         {
-            HumanHolder aholder = new HumanHolder(h.food, h.water, h.tempera, h.pregnant, h.age, h.shelterNum, h.sex, h.mum.firstName, h.dad.firstName, h.children.Count, h.GetWholeName());
+            //HumanHolder aholder = new HumanHolder(h.food, h.water, h.tempera, h.pregnant, h.age, h.shelterNum, h.sex, h.mum.firstName, h.dad.firstName,h.mum.surname,h.dad.surname, h.children.Count,h.firstName,h.surname,h.partner.firstName);
+                      
+
+            Human Humanref = h.mum;
+            string mumName = null;
+            string mumSurname = null;
+            string dadname = null;
+            string dadSurname = null;
+            string parnterName = null;
+            if (Humanref != null)
+            {
+                mumName = Humanref.firstName;
+                mumSurname = Humanref.surname;
+            }
+            Humanref = h.dad;
+            if (Humanref != null)
+            {
+                dadname = Humanref.firstName;
+                dadSurname = Humanref.surname;
+            }
+
+            Humanref = h.partner;
+            if (Humanref != null)
+            {
+                parnterName = Humanref.firstName;                
+            }
+         
+            HumanHolder aholder = new HumanHolder(h.food, h.water, h.tempera, h.pregnant, h.age, h.shelterNum, h.sex, mumName, dadname, mumSurname, dadSurname, h.children.Count, h.firstName, h.surname, parnterName);
+
             holder.Add(aholder);
         }
 
@@ -125,13 +242,8 @@ public class Community : MonoBehaviour {
 
         Application.LoadLevel("test2");
     }
-
-
-  
-
-    
-   
-    #region Generate starting resourses 
+       
+    #region Generate Random starting resourses 
 
     /// <summary>
     /// Generate Starting shelter for the community 
@@ -183,6 +295,24 @@ public class Community : MonoBehaviour {
         }
     }
 
+
+    void PlacePeopleHouses()
+    {
+        foreach (Human v in humans)
+        {
+
+           for(int i = 0; i < shelters.Count; i++)
+            {
+                if(shelters[i].shelterID == v.shelterNum)
+                {
+                    shelters[i].PlacePersonHouse(v);
+                }
+            }
+        }
+
+
+    }
+
     void increaseBySize(ref int toIncrease, int size)
     {
         toIncrease++;
@@ -213,12 +343,12 @@ public class Community : MonoBehaviour {
     void GenerateFood()
     {
         //food = Random.Range(villagers * 3*7, villagers*3*180);
-        food = 300; // start with food for 10 days 
+        food = 30 * humans.Count; // start with food for 10 days 
     }
 
     void GenerateWood()
     {
-        fuel = 20; // wood for 10 days in inital    
+        fuel = 10 * shelters.Count; // wood for 10 days in inital    
         // wood = Random.Range(10, 50);
     }
 
@@ -243,10 +373,6 @@ public class Community : MonoBehaviour {
         */
 
     }
-    #endregion
-
-    #region Add things to village
-
 
     /// <summary>
     /// creating a villager for now just makes them but later may do more
@@ -257,21 +383,81 @@ public class Community : MonoBehaviour {
         GameObject a = Instantiate(Resources.Load(humanPrefabName)) as GameObject;
 
         int year = Random.Range(14, 35);
-        if(year <= 16)
+        if (year <= 16)
         {
-            
+
             year = Random.Range(12, 17);
 
-        }else if (year >30)
+        }
+        else if (year > 30)
         {
-            year = Random.Range(30,40);
+            year = Random.Range(30, 40);
 
         }
 
-        a.GetComponent<Human>().StartHuman(Random.Range(0, 365), year,null);   
+        a.GetComponent<Human>().StartHuman(Random.Range(0, 365), year, null);
 
         humans.Add(a.GetComponent<Human>());
     }
+    #endregion
+
+    #region Generate Set starting resourses 
+
+    /// <summary>
+    /// Generate  shelters from prevous data
+    /// </summary>
+    void GenerateShelter(List<HumanHolder> currentHumans)
+    {
+        // work out how mnay shelters to create from the current amount
+        List<int> shelterNums = new List<int>();
+        foreach(HumanHolder h in currentHumans)
+        {
+            if (!shelterNums.Contains(h.shelterNum))
+            {
+                shelterNums.Add(h.shelterNum);
+            }
+        }
+        shelters.Clear(); // make sure the list is empty before starting
+        maxScreenWidth = GameObject.FindGameObjectWithTag("MainCamera").GetComponent<Camera>().orthographicSize * 2; // this is run at the start so get the camera width for showing the shelters
+           
+
+        //generate houses
+        foreach (int s in shelterNums)
+        {
+            AddShelter(s);
+        }
+        
+        
+
+    }
+
+    /// <summary>
+    /// genrate the old villagers to use for testing
+    /// </summary>
+    void CreateNewVillager(HumanHolder holder)
+    {
+        //create villager game objects and add them to the list
+        GameObject a = Instantiate(Resources.Load(humanPrefabName)) as GameObject;
+
+        Human hum = a.GetComponent<Human>();
+
+        hum.StartHuman(holder.food, holder.water, holder.age, holder.tempera, holder.pregnant,
+            holder.mumFirsName, holder.mumsurName, holder.dadFirsName, holder.dadsurName, holder.myfirstName,
+            holder.mysurname, holder.sex, holder.partnersName, holder.shelterNum);
+        //Debug.Log(hum);
+        humans.Add(hum);
+        //Debug.Log(hum);
+    }
+
+    #endregion
+
+
+    #region Add things to village
+
+
+
+
+
 
 
 
@@ -387,24 +573,26 @@ public class Community : MonoBehaviour {
     /// </summary>
     public void AddShelter()
     {
+        if (shelters.Count > 0)
+        {
+            AddShelter(GetShelterId()); // need to make sure when a shelter is destoryed you remove id ref from villgers 
+            //temp.shelterID = shelters.Count; // this may create a bug later where 2 shelters have the same id so may need to look at this ( if one is destroyed and then another created)
+        }
+        else
+        {
+            AddShelter(0);
+        }
+    }
+
+    public void AddShelter(int id)
+    {
         //start by geenrasting an instance of the shelter
         GameObject holdShelter = Instantiate(Resources.Load(shelterPrefabName)) as GameObject;
 
         Shelter temp = holdShelter.GetComponent<Shelter>();
 
+        temp.shelterID = id;     
 
-        if (shelters.Count > 0)
-        {
-            temp.shelterID = GetShelterId(); // need to make sure when a shelter is destoryed you remove id ref from villgers 
-            //temp.shelterID = shelters.Count; // this may create a bug later where 2 shelters have the same id so may need to look at this ( if one is destroyed and then another created)
-        }
-        else
-        {
-            temp.shelterID = 0;
-        }
-
-
-        
         // add the shelter to the list
         shelters.Add(temp);
 
@@ -420,8 +608,6 @@ public class Community : MonoBehaviour {
             shelters[i].transform.position = holdPos;
         }
     }
-
-
     int GetShelterId()
     {
         int tempid = shelters.Count;
@@ -795,7 +981,9 @@ public class Community : MonoBehaviour {
         bool check = false;
         if(loc == PossLocations.shelter)
         {
+            Debug.Log("3");
             AddToShelter(theHuman.shelterNum, theHuman);
+            Debug.Log("4");
         }
         else  if(loc == PossLocations.foodNode)
         {
@@ -855,26 +1043,26 @@ public class Community : MonoBehaviour {
             
             //Debug.Log(h.name +" " +h.transform.position);
         }
-
+        
         // make sure to clear peple from jobs at end of the day people will move themselves from job when done in future
         foodNode.ClearPeople();
         fuelNode.ClearPeople();
 
+        
 
-        bool checkh = true;
         foreach (Human h in humans)
         {
+           
             AddToShelter(h.shelterNum, h);
+            
             //Debug.Log(h.name +" " +h.transform.position);
-            if (!h.parents)
-            {
-                checkh = false;
-            }
+
         }      
         
-        if (checkh)
+     if(humans.Count == 0)
         {
-           // SaveCurrentHumans();
+            AllDead();
+
         }
 
 
