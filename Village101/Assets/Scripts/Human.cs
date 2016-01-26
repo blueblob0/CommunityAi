@@ -55,7 +55,7 @@ public class Human : MonoBehaviour
     private Human currentChild;
     public Human dad;
     public Human mum;
-    private Human partner;
+    public Human partner;
     public bool parents;
     public List<Human> children = new List<Human>();
     #endregion
@@ -114,6 +114,82 @@ public class Human : MonoBehaviour
         myMat = GetComponentInChildren<Renderer>().material;
     }
 
+    public void StartHuman( Hunger hung, Thirst thirst, Age theage, Temperature temper, Pregnancy preg,
+        string mumfirst,string mumSur,string dadfirst, string dadSur, 
+        string thefirstName, string thesurname, string thesex, string partnerName, int shelter)
+    {
+        dead = false;
+        currentTask = null;
+        // get the community reference 
+        communityObj = GameObject.FindObjectOfType<Community>();
+        // assign a hunger class to keep track of the humans hunger level
+        food = hung;
+        water = thirst;
+        age = theage;
+        tempera = temper;
+        shelterNum = shelter;
+
+        sex = thesex;
+        firstName = thefirstName;
+        surname = thesurname;
+
+        if (string.IsNullOrEmpty(partnerName))
+        {
+            partner = null;
+        }
+        else
+        {
+            GameObject testpartner = GameObject.Find(partnerName + " " + surname);
+
+            if (testpartner)
+            {
+                partner = testpartner.GetComponent<Human>();
+            }
+
+
+        }
+        parents = false;
+        // if the child has a mum
+        if (!string.IsNullOrEmpty(mumfirst)&& !string.IsNullOrEmpty(mumSur) )
+        {
+            GameObject testmum = GameObject.Find(mumfirst + " " + mumSur);
+
+            if (testmum)
+            {
+                mum = testmum.GetComponent<Human>();
+            }
+            parents = true;
+        }
+        else
+        {
+            mum = null;
+        }
+
+        if (!string.IsNullOrEmpty(dadfirst) && !string.IsNullOrEmpty(dadSur))
+        {
+            GameObject testdad = GameObject.Find(dadfirst + " " + dadSur);
+
+            if (testdad)
+            {
+                dad = testdad.GetComponent<Human>();
+            }
+            parents = true;
+        }
+        else // otherwise create a new surname for them
+        {
+            
+            dad = null;
+        }
+
+
+        pregnant = preg;
+        CanBePregnant();  
+
+        // set the name of the game object to be the person name
+        SetName();
+
+        myMat = GetComponentInChildren<Renderer>().material;
+    }
 
     void SetSurname()
     {
@@ -463,7 +539,14 @@ public class Human : MonoBehaviour
         //increase the age of the person by one day
         age.NewDay();
         myMat.color = age.CheckAgeColour();
-        AssignPartner();
+
+
+        if(partner == null)
+        {
+            AssignPartner();
+
+
+        }
 
 
 

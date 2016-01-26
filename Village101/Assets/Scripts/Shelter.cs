@@ -108,6 +108,7 @@ public class Shelter : MonoBehaviour {
         // if the shelter is empty remove it
         if (CheckShelterEmpty())
         {
+            Debug.Log("122");
             return true;
         }
 
@@ -142,6 +143,7 @@ public class Shelter : MonoBehaviour {
         }
         if (CheckShelterEmpty())
         {
+            Debug.Log("123");
             return true;
         }
 

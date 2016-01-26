@@ -59,6 +59,7 @@
      <Compile Include="Assets\Scripts\HumanHolder.cs" />
      <Compile Include="Assets\Scripts\HumanTestData.cs" />
      <Compile Include="Assets\Scripts\Node.cs" />
+     <Compile Include="Assets\Scripts\ScoreData.cs" />
      <Compile Include="Assets\Scripts\Shelter.cs" />
      <Compile Include="Assets\Scripts\States\Age.cs" />
      <Compile Include="Assets\Scripts\States\Hunger.cs" />

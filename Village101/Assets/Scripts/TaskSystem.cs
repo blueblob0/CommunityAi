@@ -264,7 +264,9 @@ public class TaskSystem : MonoBehaviour
 
 
         thisCommunity.StartShelterDay();
-        newAssigement(thisCommunity.GetHumansClass()); //pass a list of people currently in the community      
+       
+        newAssigement(thisCommunity.GetHumansClass()); //pass a list of people currently in the community     
+        
 
     }
 
