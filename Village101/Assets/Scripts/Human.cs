@@ -2,13 +2,11 @@
 using System.Collections.Generic;
 using UnityEngine.UI;
 
+
 public class Human : MonoBehaviour
 {
     #region Outside Varables    
 
-    private const int maxHealth = 100;
-    private const int maxMediumHealth = 80;
-    private const int maxLowHealth = 40;
     public Text nameUI;
 
     Community communityObj;
@@ -28,10 +26,10 @@ public class Human : MonoBehaviour
     
     public bool dead = false;
 
-    private Hunger food;
-    private Thirst water;
-    private Temperature tempera;
-    private Pregnancy pregnant;
+    public Hunger food;
+    public Thirst water;
+    public Temperature tempera;
+    public Pregnancy pregnant;
     public Age age;
 
   
@@ -55,10 +53,11 @@ public class Human : MonoBehaviour
 
     #region Relations
     private Human currentChild;
-    private Human dad;
-    private Human mum;
+    public Human dad;
+    public Human mum;
     private Human partner;
-    private List<Human> children = new List<Human>();
+    public bool parents;
+    public List<Human> children = new List<Human>();
     #endregion
 
     #region Programming Info
@@ -94,14 +93,15 @@ public class Human : MonoBehaviour
             surname = theMum.surname;
             mum = theMum;
             dad = theMum.partner;
+            parents = true;
         }
         else // otherwise create a new surname for them
         {
             mum = null;
             dad = null;
-            int numNames = System.Enum.GetNames(typeof(Surnames)).Length;
-            int rand = Random.Range(0, numNames);
-            surname = System.Enum.GetName(typeof(Surnames), rand);            
+            
+            SetSurname();
+            parents = false;
         }
         pregnant = new Pregnancy();
         CanBePregnant();
@@ -114,7 +114,25 @@ public class Human : MonoBehaviour
         myMat = GetComponentInChildren<Renderer>().material;
     }
 
-    private string GetWholeName()
+
+    void SetSurname()
+    {
+        bool test = true;
+
+        while (test)
+        {
+            int numNames = System.Enum.GetNames(typeof(Surnames)).Length;
+            int rand = Random.Range(0, numNames);
+            surname = System.Enum.GetName(typeof(Surnames), rand);
+            test = communityObj.SurnameUsed(surname);
+
+        }
+
+
+
+    }
+
+    public string GetWholeName()
     {
         return firstName + " " + surname;
     }
@@ -146,11 +164,14 @@ public class Human : MonoBehaviour
             {
                 pregnant.canBePregnant = false;
             }
-        }else if (sex == femaleS&& age.GetAgeType() >=ageType.adult) // if the person is female and is old enough then they can Be Pregnant
+        }
+        else if (sex == femaleS&& age.GetAgeType() >=ageType.adult) // if the person is female and is old enough then they can Be Pregnant
         {
-           // Debug.Log("1");
-           // Debug.Log(Child);
-            //Debug.Log(Child!=null);
+
+
+            pregnant.SetChance(age.GetAgeType());
+           
+           
             pregnant.canBePregnant = true;
         }
     }
@@ -463,8 +484,9 @@ public class Human : MonoBehaviour
         {
             currentChild = communityObj.CreateBabyVillager(this);
             children.Add(currentChild);
+            partner.children.Add(currentChild);
             pregnant.GiveBirth();
-            Debug.Log(age.GetAgeType() + "Giving Birth ");
+           // Debug.Log(age.GetAgeType() + "Giving Birth ");
         }
         
 
@@ -482,8 +504,7 @@ public class Human : MonoBehaviour
     {
         // first check to see if the human will die from lack of food
         if (dead || food.CheckHungerDeath() || water.CheckThirstDeath()|| age.CheckAgeDeath()||tempera.CheckColdDeath())
-        {
-            
+        {            
             dead = true;
             return;
         }

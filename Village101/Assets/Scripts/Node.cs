@@ -14,7 +14,6 @@ public class Node : MonoBehaviour {
             return false;
         }
 
-
         peopleList.Add(thePerson);
         PlacePeople();
         return true;
@@ -39,8 +38,6 @@ public class Node : MonoBehaviour {
             peopleList[i].transform.position = toPlace;
             toPlace.x += peopleWidth;
         }
-        
-
     }
 
 
@@ -52,17 +49,14 @@ public class Node : MonoBehaviour {
             return false;
         }
 
-
         for (int i = 0; i < peopleList.Count; i++)
         {
             if (peopleList[i] == thePerson)
             {
                 //Debug.Log(peopleList[i]);
                 peopleList.RemoveAt(i);
-
                 i = peopleList.Count;
             }
-
         }
 
         PlacePeople(); ;

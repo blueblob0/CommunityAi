@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
-
+[System.Serializable]
 public class Thirst  {
     int thirst; // the number of days without water
    

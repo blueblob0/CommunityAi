@@ -1,12 +1,13 @@
 ﻿using UnityEngine;
 using System.Collections;
-
+[System.Serializable]
 public class Pregnancy
 {
     bool pregnant;
     int lengthofPregnancy;
     public bool canBePregnant;
     int countnopreg;
+    float chance =1;
     // for now just handles if the mother will give birth but later on might also be used to check if the mother can work in currrent state 
     // and if the mother does work if it has any affect on the baby 
 
@@ -75,14 +76,29 @@ public class Pregnancy
     void RandomGetPreganant()
     {
        // Debug.Log("2");
-        int check = Random.Range(0, 100);
-        if (check<1)
+        float check = Random.Range(0.0f, 100.0f);
+        if (check< chance)
         {
             setPregnant();
         }
 
     }
 
+    public void SetChance(ageType age)
+    {
+        if(age== ageType.adult)
+        {
+            chance = 1;
+            
+        }
+        else
+        {
+            
+            chance =0.1f;
+        }
+
+
+    }
 
 
     /// <summary>

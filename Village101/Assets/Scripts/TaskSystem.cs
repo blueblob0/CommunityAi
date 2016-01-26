@@ -60,7 +60,7 @@ public class TaskSystem : MonoBehaviour
 
                 unAssignedTeens.Add(h);
             }
-            else if (h.age.GetAgeType() == ageType.oldAge)
+            else if (h.age.GetAgeType() == ageType.senior)
             {
 
                 unAssignedOldAge.Add(h);
