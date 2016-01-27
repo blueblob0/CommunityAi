@@ -76,15 +76,14 @@ public class Shelter : MonoBehaviour {
         {
             return false;
         }
-        Debug.Log("17");
+       // Debug.Log("17");
 
         for(int i =0;i< peopleList.Length; i++)
         {
             if (peopleList[i] == thePerson)
             {
                 //Debug.Log(peopleList[i]);
-                peopleList[i] = null;
-                Debug.Log("6");
+                peopleList[i] = null;               
                 i = peopleList.Length;
             }
         } 

@@ -43,7 +43,7 @@ public class Community : MonoBehaviour {
     
     void Start()
     {
-
+        /*
         if (File.Exists(Application.persistentDataPath + Community.fileName))
         {
             BinaryFormatter bf = new BinaryFormatter();
@@ -74,10 +74,70 @@ public class Community : MonoBehaviour {
             //Start with Shelter
             GenerateShelter(); // make shelter
         }
-        
+        */
+
+        //Start by making houses 
+        GenerateShelter(5); // make shelter
+
+        // record number of villagers 
+        int numVillagers = 0;
+        //This is used to record the year of the couple each one will be incrasingly older than the other one 
+        int holdYear =17;
+        //Start Creating a couple for each shelter
+        for (int i = 0; i < shelters.Count; i++)
+        {
+            int yearup = Random.Range(0, 100);
+            if (yearup < 10)
+            {
+                yearup = 1;
+            }
+            else if (yearup < 30)
+            {
+                yearup = 2;
+            }
+            else if (yearup < 85)
+            {
+                yearup = 3;
+            }
+            else if (yearup < 95)
+            {
+                yearup = 4;
+            }
+            else if (yearup < 100)
+            {
+                yearup = 5;
+            }
+            //Debug.Log(yearup);
+            holdYear += yearup;
+
+            Human male =CreateNewVillager(null, Human.maleS, holdYear);
+            numVillagers++;
+            int test = Random.Range(0, 100);
+            if(test < 50)
+            {   }
+            else if (test < 85)
+            {
+                holdYear += 1;
+            }
+            else if (test < 100)
+            {
+                holdYear += 2;
+            }
+            Human female = CreateNewVillager(male, Human.femaleS, holdYear);
+            numVillagers++;
+            shelters[i].PlacePersonHouse(male);
+            shelters[i].PlacePersonHouse(female);
+            male.shelterNum = shelters[i].shelterID;
+            female.shelterNum = shelters[i].shelterID;
+            //Debug.Log(male.shelterNum + " " + male.name);
+            //Debug.Log(female.shelterNum + " " + female.name);
+        }
+           
+        //Start with Shelter       
+
         //Then the starting Resourses (the idea is its a exsisting village not a new one with nothing)
-               
-        HousePeople(); // house villagers in shelter
+
+       // HousePeople(); // house villagers in shelter
 
         //Then Water
         GenerateWater();
@@ -207,6 +267,23 @@ public class Community : MonoBehaviour {
 
     }
 
+    void GenerateShelter(int number)
+    {
+        shelters.Clear(); // make sure the list is empty before starting
+        maxScreenWidth = GameObject.FindGameObjectWithTag("MainCamera").GetComponent<Camera>().orthographicSize * 2; // this is run at the start so get the camera width for showing the shelters
+
+        //Alwase need one shelter so start by making that 
+        AddShelter();        
+       
+        double shelterNeeded = number;
+               
+        //generate houses
+        while (shelters.Count < shelterNeeded)
+        {
+            AddShelter();
+        }
+
+    }
 
     /// <summary>
     /// spread the villagers out by house ( for now this is random by will assign people to houses perminatly later)
@@ -321,19 +398,29 @@ public class Community : MonoBehaviour {
         int year = Random.Range(14, 35);
         if (year <= 16)
         {
-
             year = Random.Range(12, 17);
-
         }
         else if (year > 30)
         {
             year = Random.Range(30, 40);
-
         }
 
         a.GetComponent<Human>().StartHuman(Random.Range(0, 365), year, null);
-
         humans.Add(a.GetComponent<Human>());
+    }
+
+    /// <summary>
+    /// creating a villager for now just makes them but later may do more
+    /// </summary>
+    Human CreateNewVillager(Human partner,string sex, int year)
+    {
+        //create villager game objects and add them to the list
+        GameObject a = Instantiate(Resources.Load(humanPrefabName)) as GameObject;
+
+        Human hum = a.GetComponent<Human>();
+        hum.StartHuman(Random.Range(0, 365),year, sex, partner);
+        humans.Add(hum);
+        return hum;
     }
     #endregion
 
@@ -414,7 +501,7 @@ public class Community : MonoBehaviour {
         Human ha = a.GetComponent<Human>();
         ha.StartHuman(0,0,mum);
         humans.Add(ha);
-        HousePerson(ha);
+        HousePerson(ha, mum);
         return ha;
         //Debug.Log("baby made");
     }
@@ -423,7 +510,7 @@ public class Community : MonoBehaviour {
     /// used to check the majority sex  true then more males
     /// </summary>
     /// <returns>true then more males </returns>
-    public bool? GetMajoritySex()
+    public int GetMajoritySex()
     {
         int maleC = 0;
         int femaleC = 0;
@@ -438,16 +525,7 @@ public class Community : MonoBehaviour {
                 femaleC++;
             }
         }
-        if (maleC > femaleC)
-        {
-            return true;
-
-        }
-        else if (maleC < femaleC)
-        {
-            return false;
-        }
-        return null;
+        return (maleC - femaleC);
     }
 
 
@@ -488,6 +566,53 @@ public class Community : MonoBehaviour {
         //  increaseBySize(ref c, shelters.Count);
     }
 
+    /// <summary>
+    /// try and put a person i n the same house as their mum
+    /// </summary>
+    private void HousePerson(Human person,Human mum)
+    {
+        bool check = false;
+        
+        for(int i =0;i<shelters.Count;i++)
+        {
+            if(shelters[i].shelterID == mum.shelterNum)
+            {
+                
+                if (!shelters[i].CheckShelterFull())
+                {
+                    shelters[i].PlacePersonHouse(person);
+                    person.shelterNum = shelters[i].shelterID;
+                    return;
+                }
+            }
+        }
+
+        int hold = -1;
+
+        for (int i = 0; i < shelters.Count; i++)
+        {
+            if (!shelters[i].CheckShelterFull())
+            {
+                check = shelters[i].PlacePersonHouse(person);
+
+                if (check)
+                {
+                    hold = i;
+                    i = shelters.Count;
+                }
+            }
+        }
+        if (hold > -1)
+        {
+            person.shelterNum = shelters[hold].shelterID;
+        }
+        else
+        {
+            Debug.Log("help");
+        }
+        //Debug.Log(v.GetComponent<Human>().firstName + "shelter ID: " + shelters[c].shelterID + "human ID:  " + v.GetComponent<Human>().shelterNum);
+        //  increaseBySize(ref c, shelters.Count);
+    }
 
     public bool AllSheltersFull()
     {
@@ -520,6 +645,35 @@ public class Community : MonoBehaviour {
         }
     }
 
+    public void MovePartnerTogether(Human humFemale, Human humMale)
+    {
+        if (!MoveShelter(humMale, humFemale.shelterNum))
+        {
+            // if he cant go to her shelter then try to put her in his 
+            if (!MoveShelter(humFemale, humMale.shelterNum))
+            {
+                //if they cant be put in either shelter
+                AddShelter(humFemale, humMale);
+            }
+        }
+        
+    }
+
+
+
+    private void AddShelter(Human humz,Human humx)
+    {
+
+        int holdID = GetShelterId();
+        AddShelter(holdID); // need to make sure when a shelter is destoryed you remove id ref from villgers 
+                            //temp.shelterID = shelters.Count; // this may create a bug later where 2 shelters have the same id so may need to look at this ( if one is destroyed and then another created)
+
+        RemoveFromShelter(humz.shelterNum,humz);
+        RemoveFromShelter(humx.shelterNum, humx);
+        AddToShelter(humz.shelterNum, humz);
+        AddToShelter(humx.shelterNum, humx);
+    }
+
     public void AddShelter(int id)
     {
         //start by geenrasting an instance of the shelter
@@ -543,6 +697,7 @@ public class Community : MonoBehaviour {
             holdPos.x = -maxScreenWidth + (seperation * (i + 1));
             shelters[i].transform.position = holdPos;
         }
+        
     }
     int GetShelterId()
     {
@@ -566,6 +721,33 @@ public class Community : MonoBehaviour {
         return tempid;
     }
 
+    public bool MoveShelter(Human personTomove,int ShelterID)
+    {
+        // if they already there say they moved 
+        if (personTomove.shelterNum == ShelterID)
+        {
+            return true;
+        }
+        // try removing them from the shelter and adding to the new one
+        RemoveFromShelter(personTomove.shelterNum, personTomove);       
+           
+        if (AddToShelter(ShelterID, personTomove))
+        {
+            return true;
+        }
+        else
+        {
+            // adding back to old one if removed buy cant add to new
+            AddToShelter(personTomove.shelterNum, personTomove);
+            return false;
+        }
+
+
+
+        //return false;
+
+
+    }
 
     bool IDFree(int ID)
     {
@@ -586,9 +768,9 @@ public class Community : MonoBehaviour {
     /// </summary>
     /// <param name="Id">ID of the shelter </param>
     /// <param name="hum"> person to add</param>
-    void AddToShelter(int Id, Human hum)
+    bool AddToShelter(int Id, Human hum)
     {
-        GetShelterID(Id).PlacePersonHouse(hum);                    
+       return GetShelterID(Id).PlacePersonHouse(hum);                    
     }
 
 
@@ -597,9 +779,9 @@ public class Community : MonoBehaviour {
     /// </summary>
     /// <param name="Id">ID of the shelter</param>
     /// <param name="hum">person to remove</param>
-    void RemoveFromShelter(int Id, Human hum)
-    {       
-        GetShelterID(Id).RemovePersonHouse(hum);
+    bool RemoveFromShelter(int Id, Human hum)
+    {
+        return GetShelterID(Id).RemovePersonHouse(hum);
     }
 
     void KillShelterID(int id)
@@ -884,7 +1066,7 @@ public class Community : MonoBehaviour {
         Human thePartner = null;
         foreach (Human h in humans)
         {
-            if(h.sex != sex && h.CheckForPartner() == false)
+            if(h.sex != sex && h.CheckForPartner() == false&&h.age.GetAgeType()>= ageType.adult)
             {
                 return h;
             }

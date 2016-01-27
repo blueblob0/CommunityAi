@@ -144,6 +144,56 @@ public class Human : MonoBehaviour
         myMat = GetComponentInChildren<Renderer>().material;
     }
 
+
+    // Creates the human with a age (has to be called to make starting age easier
+    public void StartHuman(int day, int year, string setSex,  Human setPartner)
+    {
+        dead = false;
+        currentTask = null;
+        // get the community reference 
+        communityObj = GameObject.FindObjectOfType<Community>();
+        // assign a hunger class to keep track of the humans hunger level
+        food = new Hunger();
+        water = new Thirst();
+        age = new Age(day, year);
+        tempera = new Temperature();
+
+        sex = setSex;
+        if (sex == maleS)
+        {
+            GenerateMale();
+        }
+        else
+        {
+            GenerateFemale();
+        }
+
+        if (setPartner)
+        {
+            partner = setPartner;
+            setPartner.partner = this;
+            surname = setPartner.surname;
+        }
+        else
+        {
+            partner = null; // mark no partner at start;
+            SetSurname();
+        }
+                        // if the child has a mum
+        mum = null;
+        dad = null;        
+        parents = false;
+        
+        pregnant = new Pregnancy();
+        CanBePregnant();      
+
+        // set the name of the game object to be the person name
+        SetName();
+        myMat = GetComponentInChildren<Renderer>().material;
+    }
+
+
+
     public void StartHuman( Hunger hung, Thirst thirst, Age theage, Temperature temper, Pregnancy preg,
         string mumfirst,string mumSur,string dadfirst, string dadSur, 
         string thefirstName, string thesurname, string thesex, string partnerName, int shelter)
@@ -307,17 +357,10 @@ public class Human : MonoBehaviour
     
     private void GenerateSex()
     {
-        int randCheck =500;
-        bool? holdSex = communityObj.GetMajoritySex();
-        if (holdSex == true)
-        {
-            //Debug.Log("34");
-            randCheck = 800;
-        }else if (holdSex == false)
-        {
-            /*Debug.Log("33");*/
-            randCheck = 200;
-        }
+        int randCheck =500; // start with the chance to be male or female equal
+        int moreMale = communityObj.GetMajoritySex(); // then work out how mnay more male there are (negative for more fmeales)
+        randCheck += moreMale * 50; // the wider the gap in numbers of a sex the higer chance for the other sex to be there
+                        
         // generate the person to be male or female
         float holdRand = Random.Range(0, 1000);
         
@@ -478,25 +521,30 @@ public class Human : MonoBehaviour
         }
         else
         {
+
             partner = hold;
         }   
-        // female gets male partner surname for now 
+        // female gets male partner surname for now but male trys to move to her shelter
         if (sex == femaleS)
         {
             surname = partner.surname;
-
+          
+            communityObj.MovePartnerTogether(this, partner);
         }
         else
         {
             partner.surname = surname;
+            communityObj.MovePartnerTogether(partner, this);
+
         }
         partner.AssignPartner(this);
+       
         SetName();
     }
 
     public void AssignPartner(Human newPartner)
     {
-        partner = this;
+        partner = newPartner;
         SetName();
     }
 
@@ -523,8 +571,8 @@ public class Human : MonoBehaviour
     {
         if (currentTask != null)
         {
-            Debug.LogError(GetWholeName()); 
-            Debug.Log("villager has a job already"); // there is no reason for this to happen but if it does might need to return true or false if the job can be assigned
+            Debug.LogError(GetWholeName() + " villager has a job already " + currentTask.payoff); 
+            //Debug.Log(); // there is no reason for this to happen but if it does might need to return true or false if the job can be assigned
             return;
         }
         else

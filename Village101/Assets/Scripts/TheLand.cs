@@ -34,7 +34,7 @@ public class TheLand : MonoBehaviour {
     int numChecksRun =0;
 
     private float startTime;
-    public const float dayLengthSecs = 0.0000001f;
+    public const float dayLengthSecs = 0.001f; //-------------------------------------------------------
     private float hourTime;
 
     private int dayLength = 24;
@@ -73,7 +73,7 @@ public class TheLand : MonoBehaviour {
     // Use this for initialization
     void Start ()
     {
-        hourTime = dayLengthSecs / 24f;
+        hourTime = dayLengthSecs / dayLength;
         theCommunity = gameObject.GetComponent<Community>();
         Application.runInBackground = true; //not part of game logic  if multiple of this change to only be called once 
         CanContinue();
@@ -200,7 +200,6 @@ public class TheLand : MonoBehaviour {
                 setTimeUI();
                 StartNewDay();
             }
-
             */
         }
         else if (endreached)
@@ -234,8 +233,43 @@ public class TheLand : MonoBehaviour {
         float holdTime = ((float)dayCount / 365.0f);
         int holdYears = Mathf.FloorToInt(holdTime);
         int holdDays = Mathf.FloorToInt((holdTime - holdYears) * 365);
-        int holdSeconds = Mathf.FloorToInt((Time.time- startTime) /hourTime);
-        timeRecord.text = "Year:" + Mathf.Floor(holdTime) + ", Day:" + holdDays + ", Hours:" + holdSeconds;
+        int holdHours = Mathf.FloorToInt((Time.time- startTime) /hourTime);
+        string year0 = "";
+        string day0 = "";
+        string hour0 = "";
+
+        if (holdYears < 10)
+        {
+            year0 = "00";
+        }
+        else if (holdYears < 100)
+        {
+            year0 = "0";
+        }
+
+        if (holdDays < 10)
+        {
+            day0 = "00";
+        }
+        else if (holdDays < 100)
+        {
+            day0 = "0";
+        }
+
+        if (holdHours < 10)
+        {
+            hour0 = "000";
+        }
+        else if (holdHours < 100)
+        {
+            hour0 = "00";
+        }
+        else if (holdHours < 1000)
+        {
+            hour0 = "0";
+        }
+
+        timeRecord.text = "Year:" + year0 + Mathf.Floor(holdTime) + ", Day:" + day0 + holdDays + ", Hours:" + hour0 + holdHours;
     }
 
     private void StartNewDay()
