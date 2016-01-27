@@ -61,12 +61,14 @@ public class TheLand : MonoBehaviour {
 
     void StartNewIteration()
     {
+        /*
         if (currentIteration >= 10)//theCommunity.allHumans.Count)
         {
             Debug.LogError("reachedEnd");
             endreached = true;
             return;
         }
+        */
         ScoreData holdData = new ScoreData();
         //holdData.SetStartData(theCommunity.allHumans[currentIteration]);
         humanScores.Add(holdData);
@@ -144,9 +146,9 @@ public class TheLand : MonoBehaviour {
 
             if (dayCount >=365 * 50)
             {
-                EndIteration();
+                //EndIteration();
                 //StartNewIteration();
-                Debug.Log("newLevel");
+               // Debug.Log("newLevel");
             }
         }
         else if (endreached)
