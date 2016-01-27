@@ -4,7 +4,7 @@ using System.Collections.Generic;
 public class Node : MonoBehaviour {
 
     public List<GameObject> peopleList;
-    const float peopleWidth = 13f;
+    const float peopleWidth = 20f;
 
     public bool PlacePersonNode(GameObject thePerson)
     {
@@ -32,12 +32,14 @@ public class Node : MonoBehaviour {
         // set the start point for people to be 
         //Debug.Log(total + " " + toPlace.x);
         toPlace.x -= (total / 2);
+        toPlace.y -= (5);
         //Debug.Log(total + " " + toPlace.x);
         for (int i = 0; i < peopleList.Count; i++)
         {
             peopleList[i].transform.position = toPlace;
             toPlace.x += peopleWidth;
         }
+
     }
 
 

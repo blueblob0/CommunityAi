@@ -6,7 +6,7 @@ using System.IO;
 
 public class Community : MonoBehaviour {
 
-    public List<List<HumanHolder>> allHumans = new List<List<HumanHolder>>();
+   
     public const string fileName = "/humandata.data";
 
     public delegate void NewDayAction();
@@ -40,27 +40,43 @@ public class Community : MonoBehaviour {
 
 
     // this start is the random one now reading from file
-    /*
+    
     void Start()
     {
-        Application.runInBackground = true; //not part of game logic  if multiple of this change to only be called once 
 
-
-        //Start by creating villagers 
-
-        //villagers not random now but might be later 
-        int numVillagers = 10;
-
-
-        for (int i = 0; i < numVillagers; i++)
+        if (File.Exists(Application.persistentDataPath + Community.fileName))
         {
-            CreateNewVillager();
+            BinaryFormatter bf = new BinaryFormatter();
+            FileStream fileOpen = File.Open(Application.persistentDataPath + fileName, FileMode.Open);
+            List<List<HumanHolder>> allHumans = (List<List<HumanHolder>>)bf.Deserialize(fileOpen);
+            fileOpen.Close();
+
+            List<HumanHolder> currentHumans = allHumans[6];
+            //Start by creating villagers 
+            for (int i = 0; i < currentHumans.Count; i++)
+            {
+                CreateNewVillager(currentHumans[i]);
+
+            }
+            //Start with Shelter
+            GenerateShelter(currentHumans); // make shelter   
         }
+        else
+        {
+            //villagers not random now but might be later 
+            int numVillagers = 10;
 
+            //Start by creating villagers 
+            for (int i = 0; i < numVillagers; i++)
+            {
+                CreateNewVillager();
+            }
+            //Start with Shelter
+            GenerateShelter(); // make shelter
+        }
+        
         //Then the starting Resourses (the idea is its a exsisting village not a new one with nothing)
-
-        //Start with Shelter
-        GenerateShelter(); // make shelter
+               
         HousePeople(); // house villagers in shelter
 
         //Then Water
@@ -78,90 +94,10 @@ public class Community : MonoBehaviour {
         // fuel = 1000000000;
 
     }
-    */
+    
 
 
-    void Start()
-    {
-        if (File.Exists(Application.persistentDataPath + Community.fileName))
-        {
-            BinaryFormatter bf = new BinaryFormatter();
-            FileStream fileOpen = File.Open(Application.persistentDataPath + fileName, FileMode.Open);
-            allHumans = (List<List<HumanHolder>>)bf.Deserialize(fileOpen);
-            fileOpen.Close();
-        }
-    }
-
-   public void StartComunity(int iteration)
-    {
-        if (File.Exists(Application.persistentDataPath + Community.fileName))
-        {
-            BinaryFormatter bf = new BinaryFormatter();
-            FileStream fileOpen = File.Open(Application.persistentDataPath + fileName, FileMode.Open);
-            allHumans = (List<List<HumanHolder>>)bf.Deserialize(fileOpen);
-            fileOpen.Close();
-        }
-        // start by removing old people 
-        foreach (Human h in humans)
-        {
-            h.dead = true;
-        }
-        humans.Clear();
-        foodNode.peopleList.Clear();
-        fuelNode.peopleList.Clear();
-        //then older shelters 
-        Shelter[] shelt = new Shelter[shelters.Count];
-
-        // for running through the new day things on the shelters 
-        for (int i = 0; i < shelters.Count; i++)
-        {
-            shelt[i] = shelters[i];
-        }
-
-        for (int i = 0; i < shelt.Length; i++)
-        {
-            if (shelt[i] != null)
-            {               
-                shelt[i].RemoveThisShelter();
-            }
-        }
-
-        shelters.Clear();
-
-        //Start by creating villagers 
-        List<HumanHolder> currentHumans = allHumans[iteration];
-
-        for (int i = 0; i < currentHumans.Count; i++)
-        {
-            CreateNewVillager(currentHumans[i]);
-            
-        }
-        
-
-
-        //Then the starting Resourses (the idea is its a exsisting village not a new one with nothing)
-
-        //Start with Shelter
-        GenerateShelter(currentHumans); // make shelter     
-
-
-        PlacePeopleHouses();
-        //Then Water
-        GenerateWater();
-
-        //Then Food
-        GenerateFood();
-
-        //Then wood
-        GenerateWood();
-
-        //Then Livestock although currently does nothing)
-        GenerateLivestock();
-        // food = 1000000000; 
-        // fuel = 1000000000;    
-      
-
-    }
+   
     
     void OnEnable()
     {        
@@ -1131,3 +1067,89 @@ public enum ageType
 
 
 }
+
+// used to work out best starting village 
+/*
+
+     void Start()
+    {
+        if (File.Exists(Application.persistentDataPath + fileName))
+        {
+            BinaryFormatter bf = new BinaryFormatter();
+            FileStream fileOpen = File.Open(Application.persistentDataPath + fileName, FileMode.Open);
+            allHumans = (List<List<HumanHolder>>)bf.Deserialize(fileOpen);
+            fileOpen.Close();
+        }
+    }
+
+   public void StartComunity(int iteration)
+    {
+        if (File.Exists(Application.persistentDataPath + fileName))
+        {
+            BinaryFormatter bf = new BinaryFormatter();
+            FileStream fileOpen = File.Open(Application.persistentDataPath + fileName, FileMode.Open);
+            allHumans = (List<List<HumanHolder>>)bf.Deserialize(fileOpen);
+            fileOpen.Close();
+        }
+        // start by removing old people 
+        foreach (Human h in humans)
+        {
+            h.dead = true;
+        }
+        humans.Clear();
+        foodNode.peopleList.Clear();
+        fuelNode.peopleList.Clear();
+        //then older shelters 
+        Shelter[] shelt = new Shelter[shelters.Count];
+
+        // for running through the new day things on the shelters 
+        for (int i = 0; i < shelters.Count; i++)
+        {
+            shelt[i] = shelters[i];
+        }
+
+        for (int i = 0; i < shelt.Length; i++)
+        {
+            if (shelt[i] != null)
+            {               
+                shelt[i].RemoveThisShelter();
+            }
+        }
+
+        shelters.Clear();
+
+        //Start by creating villagers 
+        List<HumanHolder> currentHumans = allHumans[iteration];
+
+        for (int i = 0; i < currentHumans.Count; i++)
+        {
+            CreateNewVillager(currentHumans[i]);
+            
+        }
+        
+
+
+        //Then the starting Resourses (the idea is its a exsisting village not a new one with nothing)
+
+        //Start with Shelter
+        GenerateShelter(currentHumans); // make shelter     
+
+
+        PlacePeopleHouses();
+        //Then Water
+        GenerateWater();
+
+        //Then Food
+        GenerateFood();
+
+        //Then wood
+        GenerateWood();
+
+        //Then Livestock although currently does nothing)
+        GenerateLivestock();
+        // food = 1000000000; 
+        // fuel = 1000000000;    
+      
+
+    }
+*/

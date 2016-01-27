@@ -68,10 +68,10 @@ public class TheLand : MonoBehaviour {
             return;
         }
         ScoreData holdData = new ScoreData();
-        holdData.SetStartData(theCommunity.allHumans[currentIteration]);
+        //holdData.SetStartData(theCommunity.allHumans[currentIteration]);
         humanScores.Add(holdData);
 
-        theCommunity.StartComunity(currentIteration);
+        //theCommunity.StartComunity(currentIteration);
         
 
         CanContinue();

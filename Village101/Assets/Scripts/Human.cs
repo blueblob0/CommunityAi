@@ -8,6 +8,11 @@ public class Human : MonoBehaviour
     #region Outside Varables    
 
     public Text nameUI;
+    public GameObject maleBody;
+    public GameObject femaleBody;
+    public GameObject pregIcon;
+    public GameObject woodcuttingIcon;
+    public GameObject farmingIcon;
 
     Community communityObj;
 
@@ -130,12 +135,25 @@ public class Human : MonoBehaviour
         shelterNum = shelter;
 
         sex = thesex;
-        firstName = thefirstName;
-        surname = thesurname;
+        if (thesex == maleS)
+        {
+            femaleBody.SetActive(false);
+            maleBody.SetActive(true);
+        }
+        else
+        {
+            femaleBody.SetActive(true);
+            maleBody.SetActive(false);
+        }
 
+
+        firstName = thefirstName;
+        
+       
         if (string.IsNullOrEmpty(partnerName))
         {
             partner = null;
+            SetSurname();
         }
         else
         {
@@ -144,10 +162,16 @@ public class Human : MonoBehaviour
             if (testpartner)
             {
                 partner = testpartner.GetComponent<Human>();
+                surname = partner.surname;
             }
-
-
+            else
+            {
+                partner = null;
+                SetSurname();
+            }
         }
+
+
         parents = false;
         // if the child has a mum
         if (!string.IsNullOrEmpty(mumfirst)&& !string.IsNullOrEmpty(mumSur) )
@@ -239,9 +263,11 @@ public class Human : MonoBehaviour
             else
             {
                 pregnant.canBePregnant = false;
+                return;
             }
         }
-        else if (sex == femaleS&& age.GetAgeType() >=ageType.adult) // if the person is female and is old enough then they can Be Pregnant
+
+         if (sex == femaleS&& age.GetAgeType() >=ageType.adult) // if the person is female and is old enough then they can Be Pregnant
         {
 
 
@@ -308,6 +334,8 @@ public class Human : MonoBehaviour
         int numNames = System.Enum.GetNames(typeof(NamesFemale)).Length;
         int rand = Random.Range(0, numNames);
         firstName = System.Enum.GetName(typeof(NamesFemale), rand);
+        femaleBody.SetActive(true);
+        maleBody.SetActive(false);
        
     }
   
@@ -319,7 +347,8 @@ public class Human : MonoBehaviour
         int numNames = System.Enum.GetNames(typeof(NamesMale)).Length;
         int rand = Random.Range(0, numNames);
         firstName = System.Enum.GetName(typeof(NamesMale), rand);
-       
+        femaleBody.SetActive(false);
+        maleBody.SetActive(true);
 
     }
    
@@ -497,10 +526,12 @@ public class Human : MonoBehaviour
             // if the job is food or fuel move them to the corrent node 
             if (currentTask.payoff == JobPurpose.food)
             {
+                farmingIcon.SetActive(true);
                 communityObj.SetHumanLocation(PossLocations.foodNode,this);
             }
             else if (currentTask.payoff == JobPurpose.fuel)
             {
+                woodcuttingIcon.SetActive(true);
                 communityObj.SetHumanLocation(PossLocations.fuelNode, this);
             }
 
@@ -569,8 +600,14 @@ public class Human : MonoBehaviour
             children.Add(currentChild);
             partner.children.Add(currentChild);
             pregnant.GiveBirth();
-           // Debug.Log(age.GetAgeType() + "Giving Birth ");
+            pregIcon.SetActive(false);
+            // Debug.Log(age.GetAgeType() + "Giving Birth ");
         }
+        else if (pregnant.IsPregnant())
+        {
+            pregIcon.SetActive(true);
+        }
+
         
 
         EatFood();
@@ -610,6 +647,8 @@ public class Human : MonoBehaviour
             }
             currentTask = null;
         }
+        farmingIcon.SetActive(false);
+        woodcuttingIcon.SetActive(false);
         newDay = true;
     }
 

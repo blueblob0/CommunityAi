@@ -4,9 +4,9 @@ using System.Collections.Generic;
 [System.Serializable]
 public class ScoreData  {
 
-     List<HumanHolder> holder = new List<HumanHolder>();
-     List<HumanHolder> startData = null;
-     int scoreData;
+    public List<HumanHolder> holder = new List<HumanHolder>();
+    public List<HumanHolder> startData = null;
+     public int scoreData;
 
 
     public void SetStartData(List<HumanHolder> data)
