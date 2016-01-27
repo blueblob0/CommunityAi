@@ -43,12 +43,23 @@ public class Shelter : MonoBehaviour {
             return false;
 
         }
-       
+        
+        for (int i = 0; i < peopleList.Length; i++)
+        {
+            if (peopleList[i] == thePerson)
+            {
+
+                return false;
+            }
+
+        }
+
+
         int hold = NextEmptySlot();
 
         if (hold<0) // if there are no empty slots return false
         {
-            //Debug.Log("2");
+            Debug.Log("2");
             return false;
         }
         
@@ -59,20 +70,21 @@ public class Shelter : MonoBehaviour {
     }
 
 
-    public bool RemovePersonHouse(GameObject thePerson)
+    public bool RemovePersonHouse(Human thePerson)
     {
         if (!thePerson) // if nothing is passed then cant find a point for them
         {
             return false;
         }
-       
+        Debug.Log("17");
+
         for(int i =0;i< peopleList.Length; i++)
         {
             if (peopleList[i] == thePerson)
             {
                 //Debug.Log(peopleList[i]);
                 peopleList[i] = null;
-
+                Debug.Log("6");
                 i = peopleList.Length;
             }
         } 

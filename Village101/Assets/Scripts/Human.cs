@@ -13,7 +13,7 @@ public class Human : MonoBehaviour
     public GameObject pregIcon;
     public GameObject woodcuttingIcon;
     public GameObject farmingIcon;
-
+    public GameObject sleepIcon;
     Community communityObj;
 
     #endregion
@@ -77,6 +77,31 @@ public class Human : MonoBehaviour
 
 
     #region Create Human
+
+    /// <summary>
+    /// for adding alert when enabled
+    /// </summary>
+    void OnEnable()
+    {
+        //TheLand.NewDay += StartHumanDay;
+        TheLand.StartWork += GoToJob;
+        TheLand.GoHome += GoHome;
+        TheLand.Sleep += Sleep;
+        TheLand.EndDay += EndHumanDay;
+    }
+
+    /// <summary>
+    /// for removing alters when disabled
+    /// </summary>
+    void OnDisable()
+    {
+        // TheLand.NewDay -= StartHumanDay;
+        TheLand.StartWork -= GoToJob;
+        TheLand.GoHome -= GoHome;
+        TheLand.Sleep -= Sleep;
+        TheLand.EndDay -= EndHumanDay;
+    }
+   
 
     // Creates the human with a age (has to be called to make starting age easier
     public void StartHuman(int day, int year,Human theMum)
@@ -278,23 +303,7 @@ public class Human : MonoBehaviour
         }
     }
     
-    /// <summary>
-    /// for adding alert when enabled
-    /// </summary>
-    void OnEnable()
-    {
-        //TheLand.NewDay += StartHumanDay;
-        TheLand.EndDay += EndHumanDay;
-    }
-    
-    /// <summary>
-    /// for removing alters when disabled
-    /// </summary>
-    void OnDisable()
-    {
-       // TheLand.NewDay -= StartHumanDay;
-        TheLand.EndDay -= EndHumanDay;
-    }
+   
     
     private void GenerateSex()
     {
@@ -524,25 +533,11 @@ public class Human : MonoBehaviour
             currentTask = a;
             //Debug.Log(firstName);
             // if the job is food or fuel move them to the corrent node 
-            if (currentTask.payoff == JobPurpose.food)
-            {
-                farmingIcon.SetActive(true);
-                communityObj.SetHumanLocation(PossLocations.foodNode,this);
-            }
-            else if (currentTask.payoff == JobPurpose.fuel)
-            {
-                woodcuttingIcon.SetActive(true);
-                communityObj.SetHumanLocation(PossLocations.fuelNode, this);
-            }
-
-
+           
         }
-
-
-
-
     }
 
+   
     /// <summary>
     ///Handle death of the human
     /// </summary>
@@ -631,29 +626,62 @@ public class Human : MonoBehaviour
 
         //then add the recourse generated from any job and clear the job
         //currentJob = new Sleeping();
+              
+        newDay = true;
+    }
+
+
+    private void GoToJob()
+    {
+        sleepIcon.SetActive(false);
         if (currentTask!=null)
+        {
+            if (currentTask.payoff == JobPurpose.food)
+            {
+                farmingIcon.SetActive(true);
+                communityObj.SetHumanLocation(PossLocations.foodNode, this);
+            }
+            else if (currentTask.payoff == JobPurpose.fuel)
+            {
+                woodcuttingIcon.SetActive(true);
+                communityObj.SetHumanLocation(PossLocations.fuelNode, this);
+            }
+
+        }
+        
+      
+    }
+
+    private void GoHome()
+    {
+
+        if (currentTask != null)
         {
             //if the human has the sleeping job remove some tiredness from them 
             if (currentTask.GetType() == typeof(Sleeping))
             {
                 // get the tiredness stat and remove the amount = to the task amount 
-
-
             }
             else
             {
+                //mark that job has been done
                 communityObj.TaskDone(currentTask);
-
+                communityObj.SetHumanLocation(PossLocations.shelter, this);
             }
             currentTask = null;
         }
+        
         farmingIcon.SetActive(false);
         woodcuttingIcon.SetActive(false);
-        newDay = true;
     }
 
+    private void Sleep()
+    {
 
-   
+        sleepIcon.SetActive(true);
+
+
+    }
 
 
 

@@ -597,7 +597,7 @@ public class Community : MonoBehaviour {
     /// </summary>
     /// <param name="Id">ID of the shelter</param>
     /// <param name="hum">person to remove</param>
-    void RemoveFromShelter(int Id, GameObject hum)
+    void RemoveFromShelter(int Id, Human hum)
     {       
         GetShelterID(Id).RemovePersonHouse(hum);
     }
@@ -917,9 +917,9 @@ public class Community : MonoBehaviour {
         bool check = false;
         if(loc == PossLocations.shelter)
         {
-            Debug.Log("3");
+            
             AddToShelter(theHuman.shelterNum, theHuman);
-            Debug.Log("4");
+
         }
         else  if(loc == PossLocations.foodNode)
         {
@@ -934,7 +934,7 @@ public class Community : MonoBehaviour {
 
         if (check)
         {
-            RemoveFromShelter(theHuman.shelterNum, theHuman.gameObject); // remove it from thee sehlter as we are adding it to the new place 
+            RemoveFromShelter(theHuman.shelterNum, theHuman); // remove it from thee sehlter as we are adding it to the new place 
             return true;
         }
 

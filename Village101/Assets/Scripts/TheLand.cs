@@ -13,6 +13,15 @@ public class TheLand : MonoBehaviour {
     public delegate void NewDayAction();  
     public static event NewDayAction NewDay;
 
+    public delegate void StartWorkAction(); // start work at 6 hours
+    public static event StartWorkAction StartWork;
+
+    public delegate void GoHomeAction();// go home at 14 hours
+    public static event GoHomeAction GoHome;
+
+    public delegate void SleepAction(); // sleep at 20 hours
+    public static event SleepAction Sleep;
+
     public delegate void EndDayAction();
     public static event EndDayAction EndDay;
 
@@ -20,17 +29,29 @@ public class TheLand : MonoBehaviour {
     public static event SaveHuamansAction SaveHumans;
 
     public Community theCommunity;
-    public const string ScorefileName = "/humanscore";
+    public const string scorefileName = "/humanscore";
     public const string fileEnd = ".data";
     int numChecksRun =0;
 
     private float startTime;
-    public const float dayLengthSecs = 0.00000000000000000000000000000000000000000000000001f;
+    public const float dayLengthSecs = 0.0000001f;
+    private float hourTime;
+
+    private int dayLength = 24;
+    private int workTime = 6;
+    private int homeTime = 14;
+    private int sleepTime = 20;
+
     public int dayCount;
     private bool first = false;
     public bool timeRun = true;
-    bool endreached = false;
-    bool canRun = false;
+    private bool endreached = false;
+    private bool canRun = false;
+
+    private bool hasWork = false;
+    private bool hasHome = false;
+    private bool hasSleep = false;
+
     public int currentIteration;
 
     public Text timeRecord;
@@ -52,11 +73,14 @@ public class TheLand : MonoBehaviour {
     // Use this for initialization
     void Start ()
     {
+        hourTime = dayLengthSecs / 24f;
         theCommunity = gameObject.GetComponent<Community>();
         Application.runInBackground = true; //not part of game logic  if multiple of this change to only be called once 
-        currentIteration = 0;      
-        StartNewIteration();
+        CanContinue();
+        // currentIteration = 0;      
+        //StartNewIteration();
         //canRun = true; // just for now
+
     }
 
     void StartNewIteration()
@@ -91,7 +115,7 @@ public class TheLand : MonoBehaviour {
 
         humanScores[currentIteration].WorkOutScore(theCommunity.food, theCommunity.fuel);
 
-       currentIteration++;
+        currentIteration++;
         StartNewIteration();
     }
 
@@ -114,13 +138,59 @@ public class TheLand : MonoBehaviour {
 
         if (canRun)
         {
-
+            setTimeUI();
             if (first)
             {
                 StartNewDay();
                 first = false;
             }
-           
+            if (timeRun)
+            {
+                if (!hasWork &&startTime + hourTime * workTime <= Time.time )
+                {
+
+                    StartWork();
+                    hasWork = true;
+                    Debug.Log("work");
+                }
+                else if (!hasHome && startTime + hourTime * homeTime <= Time.time)
+                {
+
+                    GoHome();
+                    hasHome = true;
+                    Debug.Log("GoHome");
+                }
+                else if (!hasSleep && startTime + hourTime * sleepTime <= Time.time)
+                {
+
+                    Sleep();
+                    hasSleep = true;
+                    Debug.Log("Sleep");
+                }
+                else if (startTime + dayLengthSecs <= Time.time)
+                {
+
+                    StartEndDay();
+
+                    startTime = Time.time;
+                    dayCount++;
+                    setTimeUI();
+                    StartNewDay();
+                    hasWork = false;
+                    hasHome = false;
+                    hasSleep = false;
+
+                }
+
+            }
+            //for running mutiple iterations to find best village
+            if (dayCount >=365 * 50)
+            {
+                //EndIteration();
+                //StartNewIteration();
+               // Debug.Log("newLevel");
+            }
+
             // need to make this time based instead of input later 
             /*
             if (Input.GetKeyDown("g"))
@@ -132,24 +202,6 @@ public class TheLand : MonoBehaviour {
             }
 
             */
-          
-            if (startTime + dayLengthSecs <= Time.time && timeRun)
-            {
-                
-                StartEndDay();
-                
-                startTime = Time.time;
-                dayCount++;
-                setTimeUI();
-                StartNewDay();
-            }
-
-            if (dayCount >=365 * 50)
-            {
-                //EndIteration();
-                //StartNewIteration();
-               // Debug.Log("newLevel");
-            }
         }
         else if (endreached)
         {
@@ -158,7 +210,7 @@ public class TheLand : MonoBehaviour {
             {
                 Debug.Log(humanScores[i] + " " + humanScores[i].GetScoreData());
             }
-            string holds = ScorefileName + numChecksRun.ToString() + fileEnd;
+            string holds = scorefileName + numChecksRun.ToString() + fileEnd;
             FileStream file = File.Create(Application.persistentDataPath + holds);
             bf.Serialize(file, humanScores);
             file.Close();
@@ -182,7 +234,8 @@ public class TheLand : MonoBehaviour {
         float holdTime = ((float)dayCount / 365.0f);
         int holdYears = Mathf.FloorToInt(holdTime);
         int holdDays = Mathf.FloorToInt((holdTime - holdYears) * 365);
-        timeRecord.text = "Year:" + Mathf.Floor(holdTime) + ", Day:" + holdDays;
+        int holdSeconds = Mathf.FloorToInt((Time.time- startTime) /hourTime);
+        timeRecord.text = "Year:" + Mathf.Floor(holdTime) + ", Day:" + holdDays + ", Hours:" + holdSeconds;
     }
 
     private void StartNewDay()
