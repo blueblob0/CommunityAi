@@ -75,6 +75,8 @@
      <Compile Include="Assets\Scripts\Tasks\Task.cs" />
      <Compile Include="Assets\Scripts\Tasks\WaterGather.cs" />
      <Compile Include="Assets\Scripts\TheLand.cs" />
+     <None Include="Assets\uIntelliSense\Editor\Resources\uintellisense-data.xml" />
+     <None Include="Assets\uIntelliSense\LICENSE.txt" />
  <Reference Include="UnityEngine.UI">
  <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/GUISystem/UnityEngine.UI.dll</HintPath>
  </Reference>

@@ -25,6 +25,7 @@ public class Community : MonoBehaviour {
     public Node fuelNode;
     public Node foodNode;
 
+    const int shelterNum = 5;
 
 
     //Set to private later
@@ -77,67 +78,134 @@ public class Community : MonoBehaviour {
         */
 
         //Start by making houses 
-        GenerateShelter(5); // make shelter
+        GenerateShelter(shelterNum); // make shelter (haveing 5 to start with)
 
         // record number of villagers 
         int numVillagers = 0;
         //This is used to record the year of the couple each one will be incrasingly older than the other one 
         int holdYear =17;
+        int holdChildYear = 0;
+        int holdTeenYear = 12;
         //Start Creating a couple for each shelter
         for (int i = 0; i < shelters.Count; i++)
         {
+            // use the for the gap between last couple and this one 
             int yearup = Random.Range(0, 100);
-            if (yearup < 10)
-            {
-                yearup = 1;
-            }
-            else if (yearup < 30)
-            {
-                yearup = 2;
-            }
-            else if (yearup < 85)
-            {
-                yearup = 3;
-            }
-            else if (yearup < 95)
-            {
-                yearup = 4;
-            }
-            else if (yearup < 100)
-            {
-                yearup = 5;
-            }
-            //Debug.Log(yearup);
-            holdYear += yearup;
-
-            Human male =CreateNewVillager(null, Human.maleS, holdYear);
-            numVillagers++;
-            int test = Random.Range(0, 100);
-            if(test < 50)
-            {   }
-            else if (test < 85)
+            if (yearup < 5)
             {
                 holdYear += 1;
             }
-            else if (test < 100)
+            else if (yearup <20)
+            {
+                holdYear +=2;
+            }
+            else if (yearup < 70)
+            {
+                holdYear += 3;
+            }
+            else if (yearup < 95)
+            {
+                holdYear += 4;
+            }
+            else if (yearup < 100)
+            {
+                holdYear += 5;
+            }
+            //Debug.Log(yearup);
+            
+            int holda = holdYear; // for recording
+            //generate male
+            Human male =CreateNewVillager(null, Human.maleS, holdYear);
+            numVillagers++;
+            // use this to work out age diffrnece between partners
+            yearup = Random.Range(0, 100);
+            if (yearup < 15)
+            {
+                holdYear -=2;
+            }
+            else if (yearup < 40)
+            {
+                holdYear -= 1;
+            }
+            else if (yearup < 60)
+            {
+                holdYear += 2;
+            }           
+            else if (yearup < 85)
+            {
+                holdYear += 1;
+            }
+            else if (yearup < 100)
             {
                 holdYear += 2;
             }
+            //generate Female
             Human female = CreateNewVillager(male, Human.femaleS, holdYear);
-            numVillagers++;
+            numVillagers++;  
+
             shelters[i].PlacePersonHouse(male);
             shelters[i].PlacePersonHouse(female);
+            
             male.shelterNum = shelters[i].shelterID;
             female.shelterNum = shelters[i].shelterID;
-            //Debug.Log(male.shelterNum + " " + male.name);
-            //Debug.Log(female.shelterNum + " " + female.name);
+
+            yearup = Random.Range(0, 100);
+            if (holdChildYear < 12&& holdChildYear< female.age.ageYear-16)
+            {
+                
+                if (yearup < 10)
+                {
+                    holdChildYear += 0;
+                }
+                else if (yearup < 70)
+                {
+                    holdChildYear += 1;
+                }
+                else if (yearup < 100)
+                {
+                    holdChildYear += 2;
+                }                
+
+                Human achild = CreateNewVillager(female, holdChildYear);
+                shelters[i].PlacePersonHouse(achild);
+                achild.shelterNum = shelters[i].shelterID;
+            }
+
+
+            yearup = Random.Range(0, 100);
+            if (holdTeenYear < 17 && holdTeenYear < female.age.ageYear - 16)
+            {
+
+                if (yearup < 10)
+                {
+                    holdTeenYear += 0;
+                }
+                else if (yearup < 70)
+                {
+                    holdTeenYear += 1;
+                }
+                else if (yearup < 100)
+                {
+                    holdTeenYear += 2;
+                }
+
+                Human aTeen = CreateNewVillager(female, holdTeenYear);
+                shelters[i].PlacePersonHouse(aTeen);
+                aTeen.shelterNum = shelters[i].shelterID;
+            }
+            holdYear = Mathf.FloorToInt((holdYear + holda) / 2);
         }
-           
+
+        
+
+
+
+
         //Start with Shelter       
 
         //Then the starting Resourses (the idea is its a exsisting village not a new one with nothing)
 
-       // HousePeople(); // house villagers in shelter
+        // HousePeople(); // house villagers in shelter
 
         //Then Water
         GenerateWater();
@@ -150,8 +218,7 @@ public class Community : MonoBehaviour {
 
         //Then Livestock although currently does nothing)
         GenerateLivestock();
-        // food = 1000000000; 
-        // fuel = 1000000000;
+        
 
     }
     
@@ -407,6 +474,21 @@ public class Community : MonoBehaviour {
 
         a.GetComponent<Human>().StartHuman(Random.Range(0, 365), year, null);
         humans.Add(a.GetComponent<Human>());
+    }
+
+    /// <summary>
+    /// creating a villager for now just makes them but later may do more
+    /// </summary>
+    Human CreateNewVillager(Human mum, int year)
+    {
+        //create villager game objects and add them to the list
+        GameObject a = Instantiate(Resources.Load(humanPrefabName)) as GameObject;
+
+        Human hum = a.GetComponent<Human>();
+        hum.StartHuman(Random.Range(0, 365), year, mum);
+        humans.Add(hum);
+
+        return hum;
     }
 
     /// <summary>

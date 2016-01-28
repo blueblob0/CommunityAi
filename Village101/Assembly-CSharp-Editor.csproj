@@ -5,11 +5,11 @@
 	<Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
 	<ProductVersion>10.0.20506</ProductVersion>
 	<SchemaVersion>2.0</SchemaVersion>
-	<ProjectGuid>{FB75DA54-A59F-6E13-92AF-A80A0958E0B4}</ProjectGuid>
+	<ProjectGuid>{15BC271A-1674-008A-4133-0BA3CAFD525D}</ProjectGuid>
 	<OutputType>Library</OutputType>
 	<AppDesignerFolder>Properties</AppDesignerFolder>
 	<RootNamespace></RootNamespace>
-	<AssemblyName>Assembly-CSharp</AssemblyName>
+	<AssemblyName>Assembly-CSharp-Editor</AssemblyName>
 	<TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
 	<FileAlignment>512</FileAlignment>
 	<BaseDirectory>Assets</BaseDirectory>
@@ -46,49 +46,76 @@
 	</Reference>
   </ItemGroup>
   <ItemGroup>
-     <Compile Include="Assets\Scripts\Community.cs" />
-     <Compile Include="Assets\Scripts\DataToText.cs" />
-     <Compile Include="Assets\Scripts\DisplayData.cs" />
-     <Compile Include="Assets\Scripts\Enums\Names\NamesBoth.cs" />
-     <Compile Include="Assets\Scripts\Enums\Names\NamesFemale.cs" />
-     <Compile Include="Assets\Scripts\Enums\Names\NamesMale.cs" />
-     <Compile Include="Assets\Scripts\Enums\Names\Surnames.cs" />
-     <Compile Include="Assets\Scripts\Enums\WaterSources.cs" />
-     <Compile Include="Assets\Scripts\GameHold.cs" />
-     <Compile Include="Assets\Scripts\Human.cs" />
-     <Compile Include="Assets\Scripts\HumanEditor.cs" />
-     <Compile Include="Assets\Scripts\HumanHolder.cs" />
-     <Compile Include="Assets\Scripts\HumanTestData.cs" />
-     <Compile Include="Assets\Scripts\Node.cs" />
-     <Compile Include="Assets\Scripts\ReadHumanData.cs" />
-     <Compile Include="Assets\Scripts\ScoreData.cs" />
-     <Compile Include="Assets\Scripts\Shelter.cs" />
-     <Compile Include="Assets\Scripts\States\Age.cs" />
-     <Compile Include="Assets\Scripts\States\Hunger.cs" />
-     <Compile Include="Assets\Scripts\States\Pregnancy.cs" />
-     <Compile Include="Assets\Scripts\States\Temperature.cs" />
-     <Compile Include="Assets\Scripts\States\Thirst.cs" />
-     <Compile Include="Assets\Scripts\TaskSystem.cs" />
-     <Compile Include="Assets\Scripts\Tasks\Farming.cs" />
-     <Compile Include="Assets\Scripts\Tasks\Logging.cs" />
-     <Compile Include="Assets\Scripts\Tasks\Sleeping.cs" />
-     <Compile Include="Assets\Scripts\Tasks\Task.cs" />
-     <Compile Include="Assets\Scripts\Tasks\WaterGather.cs" />
-     <Compile Include="Assets\Scripts\TheLand.cs" />
+     <Compile Include="Assets\uIntelliSense\Editor\MenuItems.cs" />
      <None Include="Assets\uIntelliSense\Editor\Resources\uintellisense-data.xml" />
      <None Include="Assets\uIntelliSense\LICENSE.txt" />
  <Reference Include="UnityEngine.UI">
  <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/GUISystem/UnityEngine.UI.dll</HintPath>
  </Reference>
+ <Reference Include="UnityEditor.UI">
+ <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/GUISystem/Editor/UnityEditor.UI.dll</HintPath>
+ </Reference>
  <Reference Include="UnityEngine.Networking">
  <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/Networking/UnityEngine.Networking.dll</HintPath>
+ </Reference>
+ <Reference Include="UnityEditor.Networking">
+ <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/Networking/Editor/UnityEditor.Networking.dll</HintPath>
  </Reference>
  <Reference Include="UnityEngine.Analytics">
  <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/UnityAnalytics/UnityEngine.Analytics.dll</HintPath>
  </Reference>
+ <Reference Include="UnityEditor.Graphs">
+ <HintPath>C:/Program Files/Unity/Editor/Data/Managed/UnityEditor.Graphs.dll</HintPath>
+ </Reference>
+ <Reference Include="UnityEditor.Android.Extensions">
+ <HintPath>C:/Program Files/Unity/Editor/Data/PlaybackEngines/androidplayer/UnityEditor.Android.Extensions.dll</HintPath>
+ </Reference>
+ <Reference Include="UnityEditor.iOS.Extensions">
+ <HintPath>C:/Program Files/Unity/Editor/Data/PlaybackEngines/iOSSupport/UnityEditor.iOS.Extensions.dll</HintPath>
+ </Reference>
+ <Reference Include="UnityEditor.WP8.Extensions">
+ <HintPath>C:/Program Files/Unity/Editor/Data/PlaybackEngines/wp8support/UnityEditor.WP8.Extensions.dll</HintPath>
+ </Reference>
+ <Reference Include="UnityEditor.Metro.Extensions">
+ <HintPath>C:/Program Files/Unity/Editor/Data/PlaybackEngines/metrosupport/UnityEditor.Metro.Extensions.dll</HintPath>
+ </Reference>
+ <Reference Include="UnityEditor.BB10.Extensions">
+ <HintPath>C:/Program Files/Unity/Editor/Data/PlaybackEngines/blackberryplayer/UnityEditor.BB10.Extensions.dll</HintPath>
+ </Reference>
+ <Reference Include="UnityEditor.SamsungTV.Extensions">
+ <HintPath>C:/Program Files/Unity/Editor/Data/PlaybackEngines/stvplayer/STVPlayer/UnityEditor.SamsungTV.Extensions.dll</HintPath>
+ </Reference>
+ <Reference Include="UnityEditor.WebGL.Extensions">
+ <HintPath>C:/Program Files/Unity/Editor/Data/PlaybackEngines/webglsupport/UnityEditor.WebGL.Extensions.dll</HintPath>
+ </Reference>
+ <Reference Include="UnityEditor.LinuxStandalone.Extensions">
+ <HintPath>C:/Program Files/Unity/Editor/Data/PlaybackEngines/linuxstandalonesupport/UnityEditor.LinuxStandalone.Extensions.dll</HintPath>
+ </Reference>
+ <Reference Include="UnityEditor.WindowsStandalone.Extensions">
+ <HintPath>C:/Program Files/Unity/Editor/Data/PlaybackEngines/windowsstandalonesupport/UnityEditor.WindowsStandalone.Extensions.dll</HintPath>
+ </Reference>
+ <Reference Include="UnityEditor.OSXStandalone.Extensions">
+ <HintPath>C:/Program Files/Unity/Editor/Data/PlaybackEngines/macstandalonesupport/UnityEditor.OSXStandalone.Extensions.dll</HintPath>
+ </Reference>
+ <Reference Include="LostPolygon.uIntelliSense.Internal.MacInterop">
+ <HintPath>D:/Uni Documents/Final Year Project/CommunityAi/Village101/Assets/uIntelliSense/Editor/Assemblies/LostPolygon.uIntelliSense.Internal.MacInterop.dll</HintPath>
+ </Reference>
+ <Reference Include="LostPolygon.uIntelliSense">
+ <HintPath>D:/Uni Documents/Final Year Project/CommunityAi/Village101/Assets/uIntelliSense/Editor/Assemblies/LostPolygon.uIntelliSense.dll</HintPath>
+ </Reference>
+ <Reference Include="LostPolygon.uIntelliSense.fastJSON">
+ <HintPath>D:/Uni Documents/Final Year Project/CommunityAi/Village101/Assets/uIntelliSense/Editor/Plugins/LostPolygon.uIntelliSense.fastJSON.dll</HintPath>
+ </Reference>
+ <Reference Include="LostPolygon.uIntelliSense.HtmlAgilityPack">
+ <HintPath>D:/Uni Documents/Final Year Project/CommunityAi/Village101/Assets/uIntelliSense/Editor/Plugins/LostPolygon.uIntelliSense.HtmlAgilityPack.dll</HintPath>
+ </Reference>
  <Reference Include="UnityEditor.iOS.Extensions.Xcode">
  <HintPath>C:/Program Files/Unity/Editor/Data/PlaybackEngines/iOSSupport/UnityEditor.iOS.Extensions.Xcode.dll</HintPath>
  </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="Assembly-CSharp.csproj">
+      <Project>{FB75DA54-A59F-6E13-92AF-A80A0958E0B4}</Project>      <Name>Assembly-CSharp</Name>    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

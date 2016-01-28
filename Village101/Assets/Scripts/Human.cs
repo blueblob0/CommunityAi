@@ -36,6 +36,7 @@ public class Human : MonoBehaviour
     public Temperature tempera;
     public Pregnancy pregnant;
     public Age age;
+   
 
   
     public Task currentTask = null;
