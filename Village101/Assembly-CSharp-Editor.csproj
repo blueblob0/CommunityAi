@@ -46,6 +46,7 @@
 	</Reference>
   </ItemGroup>
   <ItemGroup>
+     <Compile Include="Assets\Scripts\Ai Community\Editor\CommunityEditor.cs" />
      <Compile Include="Assets\uIntelliSense\Editor\MenuItems.cs" />
      <None Include="Assets\uIntelliSense\Editor\Resources\uintellisense-data.xml" />
      <None Include="Assets\uIntelliSense\LICENSE.txt" />
@@ -63,6 +64,24 @@
  </Reference>
  <Reference Include="UnityEngine.Analytics">
  <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/UnityAnalytics/UnityEngine.Analytics.dll</HintPath>
+ </Reference>
+ <Reference Include="AssetStoreTools">
+ <HintPath>D:/Uni Documents/Final Year Project/CommunityAi/Village101/Assets/AssetStoreTools/Editor/AssetStoreTools.dll</HintPath>
+ </Reference>
+ <Reference Include="AssetStoreToolsExtra">
+ <HintPath>D:/Uni Documents/Final Year Project/CommunityAi/Village101/Assets/AssetStoreTools/Editor/AssetStoreToolsExtra.dll</HintPath>
+ </Reference>
+ <Reference Include="LostPolygon.uIntelliSense">
+ <HintPath>D:/Uni Documents/Final Year Project/CommunityAi/Village101/Assets/uIntelliSense/Editor/Assemblies/LostPolygon.uIntelliSense.dll</HintPath>
+ </Reference>
+ <Reference Include="LostPolygon.uIntelliSense.Internal.MacInterop">
+ <HintPath>D:/Uni Documents/Final Year Project/CommunityAi/Village101/Assets/uIntelliSense/Editor/Assemblies/LostPolygon.uIntelliSense.Internal.MacInterop.dll</HintPath>
+ </Reference>
+ <Reference Include="LostPolygon.uIntelliSense.fastJSON">
+ <HintPath>D:/Uni Documents/Final Year Project/CommunityAi/Village101/Assets/uIntelliSense/Editor/Plugins/LostPolygon.uIntelliSense.fastJSON.dll</HintPath>
+ </Reference>
+ <Reference Include="LostPolygon.uIntelliSense.HtmlAgilityPack">
+ <HintPath>D:/Uni Documents/Final Year Project/CommunityAi/Village101/Assets/uIntelliSense/Editor/Plugins/LostPolygon.uIntelliSense.HtmlAgilityPack.dll</HintPath>
  </Reference>
  <Reference Include="UnityEditor.Graphs">
  <HintPath>C:/Program Files/Unity/Editor/Data/Managed/UnityEditor.Graphs.dll</HintPath>
@@ -96,18 +115,6 @@
  </Reference>
  <Reference Include="UnityEditor.OSXStandalone.Extensions">
  <HintPath>C:/Program Files/Unity/Editor/Data/PlaybackEngines/macstandalonesupport/UnityEditor.OSXStandalone.Extensions.dll</HintPath>
- </Reference>
- <Reference Include="LostPolygon.uIntelliSense.Internal.MacInterop">
- <HintPath>D:/Uni Documents/Final Year Project/CommunityAi/Village101/Assets/uIntelliSense/Editor/Assemblies/LostPolygon.uIntelliSense.Internal.MacInterop.dll</HintPath>
- </Reference>
- <Reference Include="LostPolygon.uIntelliSense">
- <HintPath>D:/Uni Documents/Final Year Project/CommunityAi/Village101/Assets/uIntelliSense/Editor/Assemblies/LostPolygon.uIntelliSense.dll</HintPath>
- </Reference>
- <Reference Include="LostPolygon.uIntelliSense.fastJSON">
- <HintPath>D:/Uni Documents/Final Year Project/CommunityAi/Village101/Assets/uIntelliSense/Editor/Plugins/LostPolygon.uIntelliSense.fastJSON.dll</HintPath>
- </Reference>
- <Reference Include="LostPolygon.uIntelliSense.HtmlAgilityPack">
- <HintPath>D:/Uni Documents/Final Year Project/CommunityAi/Village101/Assets/uIntelliSense/Editor/Plugins/LostPolygon.uIntelliSense.HtmlAgilityPack.dll</HintPath>
  </Reference>
  <Reference Include="UnityEditor.iOS.Extensions.Xcode">
  <HintPath>C:/Program Files/Unity/Editor/Data/PlaybackEngines/iOSSupport/UnityEditor.iOS.Extensions.Xcode.dll</HintPath>
